@@ -1,7 +1,6 @@
 ---
 name: pdf-processor
 description: PDF 页面操作专家，支持复制、删除、移动指定页面
-allowed-tools: Read, Write, Bash
 ---
 
 # PDF 页面处理专家
