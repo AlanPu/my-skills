@@ -15,3 +15,7 @@ This repository contains custom agent skills that enhance AI functionality. Each
 ### Normalizing Note
 - **Description**: Converts users' original thought records (such as fragmented ideas, temporary notes, pasted content) into structurally clear Markdown notes that are easy to read and understand for long-term use
 - **Location**: `skills/normalizing-note/SKILL.md`
+
+### Video Downloader
+- **Description**: Downloads videos from various sites using yt-dlp. Invoke when user provides a video link and requests to download it.
+- **Location**: `skills/video-downloader/SKILL.md`
