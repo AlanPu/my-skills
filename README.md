@@ -23,3 +23,7 @@ This repository contains custom agent skills that enhance AI functionality. Each
 ### Beautiful Mermaid
 - **Description**: 使用beautiful-mermaid库美化和渲染mermaid流程图，支持多种主题。当用户需要美化现有mermaid图或创建更漂亮的流程图时调用。
 - **Location**: `skills/beautiful-mermaid/SKILL.md`
+
+### Superpowers
+- **Description**: 当要求从头开始搭建一个软件的时候触发，指导一步步完成软件的搭建。
+- **Location**: `skills/superpowers/SKILL.md`
