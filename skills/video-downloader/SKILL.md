@@ -1,4 +1,9 @@
 ---
+name: video-downloader
+description: Downloads videos from various sites using yt-dlp. Invoke when user provides a video link and requests to download it.
+---
+
+---
 name: "video-downloader"
 description: "Downloads videos from various sites using yt-dlp. Invoke when user provides a video link and requests to download it."
 ---

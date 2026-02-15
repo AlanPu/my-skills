@@ -19,3 +19,7 @@ This repository contains custom agent skills that enhance AI functionality. Each
 ### Video Downloader
 - **Description**: Downloads videos from various sites using yt-dlp. Invoke when user provides a video link and requests to download it.
 - **Location**: `skills/video-downloader/SKILL.md`
+
+### Beautiful Mermaid
+- **Description**: 使用beautiful-mermaid库美化和渲染mermaid流程图，支持多种主题。当用户需要美化现有mermaid图或创建更漂亮的流程图时调用。
+- **Location**: `skills/beautiful-mermaid/SKILL.md`
