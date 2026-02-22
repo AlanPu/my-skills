@@ -1,29 +1,28 @@
 # My Skills
 
-A collection of Agent skills designed to extend AI capabilities for specialized tasks.
+## 技能列表
 
-## Project Overview
+### ticktick-todo
+操作电脑打开滴答清单软件并创建待办事项。当用户需要自动化打开滴答清单并添加新任务时调用。
 
-This repository contains custom agent skills that enhance AI functionality. Each skill is designed to handle specific tasks or domains, providing specialized capabilities beyond the default feature set.
+### beautiful-mermaid
+使用beautiful-mermaid库美化和渲染mermaid流程图，支持多种主题。当用户需要美化现有mermaid图或创建更漂亮的流程图时调用。
 
-## Available Skills
+### normalizing-note
+将用户的原始思绪记录（如碎片化想法、临时笔记、粘贴内容）转化为结构清晰、便于长期阅读和理解的 Markdown 笔记。当用户描述需要整理笔记时使用。
 
-### PDF Processor
-- **Description**: PDF page manipulation expert, supporting copy, delete, and move operations on specified pages
-- **Location**: `skills/pdf-processor/SKILL.md`
+### pdf-processor
+PDF 页面操作专家，支持复制、删除、移动指定页面
 
-### Normalizing Note
-- **Description**: Converts users' original thought records (such as fragmented ideas, temporary notes, pasted content) into structurally clear Markdown notes that are easy to read and understand for long-term use
-- **Location**: `skills/normalizing-note/SKILL.md`
+### superpowers
+当要求从头开始搭建一个软件的时候触发，指导一步步完成软件的搭建。
 
-### Video Downloader
-- **Description**: Downloads videos from various sites using yt-dlp. Invoke when user provides a video link and requests to download it.
-- **Location**: `skills/video-downloader/SKILL.md`
+### video-downloader
+Downloads videos from various sites using yt-dlp. Invoke when user provides a video link and requests to download it.
 
-### Beautiful Mermaid
-- **Description**: 使用beautiful-mermaid库美化和渲染mermaid流程图，支持多种主题。当用户需要美化现有mermaid图或创建更漂亮的流程图时调用。
-- **Location**: `skills/beautiful-mermaid/SKILL.md`
+## 使用方法
+1. 在 Trae IDE 中，当遇到对应场景时，系统会自动调用相应的技能
+2. 也可以手动指定使用某个技能来完成特定任务
 
-### Superpowers
-- **Description**: 当要求从头开始搭建一个软件的时候触发，指导一步步完成软件的搭建。
-- **Location**: `skills/superpowers/SKILL.md`
+## 贡献
+欢迎添加新的技能到这个仓库中。
