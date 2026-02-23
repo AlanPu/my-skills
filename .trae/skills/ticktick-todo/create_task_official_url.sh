@@ -2,10 +2,10 @@
 
 # Shell script to create a task in TickTick using official URL Scheme
 # Usage: bash create_task_official_url.sh "任务标题" "时间" "执行人" "清单"
-# Example: bash create_task_official_url.sh "弹琴" "明天 08:00" "~提子" "提子"
+# Example: bash create_task_official_url.sh "弹琴" "明天 08:00" "~提子" "🧚提子"
 
 # Default values
-DEFAULT_TITLE="新任务"
+DEFAULT_TITLE="英语课"
 DEFAULT_TIME="今天"
 DEFAULT_ASSIGNEE=""
 DEFAULT_LIST=""
