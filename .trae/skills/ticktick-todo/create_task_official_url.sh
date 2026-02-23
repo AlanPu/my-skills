@@ -16,13 +16,44 @@ TASK_TIME=${2:-$DEFAULT_TIME}
 TASK_ASSIGNEE=${3:-$DEFAULT_ASSIGNEE}
 TASK_LIST=${4:-$DEFAULT_LIST}
 
+# Store original time for display in task content
+ORIGINAL_TIME="$TASK_TIME"
+
+# Function to subtract 10 minutes from time
+subtract_10_minutes() {
+    local time_str="$1"
+    if [[ "$time_str" =~ ^([0-9]{1,2}):([0-9]{2})$ ]]; then
+        local hour=${BASH_REMATCH[1]}
+        local minute=${BASH_REMATCH[2]}
+        
+        # Subtract 10 minutes
+        if [ "$minute" -ge 10 ]; then
+            minute=$((minute - 10))
+        else
+            hour=$((hour - 1))
+            minute=$((minute + 50))
+            # Handle hour wrap-around
+            if [ "$hour" -lt 0 ]; then
+                hour=23
+            fi
+        fi
+        
+        # Format the adjusted time
+        printf "%02d:%02d" "$hour" "$minute"
+    else
+        echo "$time_str"
+    fi
+}
+
 # Process time information
 if [[ "$TASK_TIME" == *"明天"* ]]; then
     # Tomorrow's date
     TASK_DUE_DATE=$(date -v+1d +"%Y-%m-%d")
     # Extract time if provided
     if [[ "$TASK_TIME" =~ 明天[[:space:]]*([0-9]{1,2}:[0-9]{2}) ]]; then
-        TASK_DUE_TIME=${BASH_REMATCH[1]}
+        ORIGINAL_TIME="明天 ${BASH_REMATCH[1]}"
+        # Subtract 10 minutes
+        TASK_DUE_TIME=$(subtract_10_minutes "${BASH_REMATCH[1]}")
     else
         TASK_DUE_TIME=""
     fi
@@ -31,9 +62,24 @@ elif [[ "$TASK_TIME" == *"今天"* ]]; then
     TASK_DUE_DATE=$(date +"%Y-%m-%d")
     # Extract time if provided
     if [[ "$TASK_TIME" =~ 今天[[:space:]]*([0-9]{1,2}:[0-9]{2}) ]]; then
-        TASK_DUE_TIME=${BASH_REMATCH[1]}
+        ORIGINAL_TIME="今天 ${BASH_REMATCH[1]}"
+        # Subtract 10 minutes
+        TASK_DUE_TIME=$(subtract_10_minutes "${BASH_REMATCH[1]}")
     else
         TASK_DUE_TIME=""
+    fi
+elif [[ "$TASK_TIME" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}[[:space:]]*([0-9]{1,2}:[0-9]{2})?$ ]]; then
+    # Specific date format (YYYY-MM-DD HH:MM)
+    if [[ "$TASK_TIME" =~ ^([0-9]{4}-[0-9]{2}-[0-9]{2})[[:space:]]*([0-9]{1,2}:[0-9]{2})?$ ]]; then
+        TASK_DUE_DATE=${BASH_REMATCH[1]}
+        ORIGINAL_TIME="$TASK_TIME"
+        # Extract time if provided
+        if [[ -n "${BASH_REMATCH[2]}" ]]; then
+            # Subtract 10 minutes
+            TASK_DUE_TIME=$(subtract_10_minutes "${BASH_REMATCH[2]}")
+        else
+            TASK_DUE_TIME=""
+        fi
     fi
 else
     # Default to today
@@ -43,9 +89,9 @@ fi
 
 # Format task content
 if [[ -n "$TASK_DUE_TIME" ]]; then
-    TASK_CONTENT="$TASK_TITLE $TASK_DUE_DATE $TASK_DUE_TIME"
+    TASK_CONTENT="$TASK_TITLE $ORIGINAL_TIME"
 else
-    TASK_CONTENT="$TASK_TITLE $TASK_DUE_DATE"
+    TASK_CONTENT="$TASK_TITLE $ORIGINAL_TIME"
 fi
 
 # Add assignee if provided
@@ -82,18 +128,22 @@ else
     fi
 fi
 
-# Open the URL
-echo "Opening official TickTick URL: $ticktick_url"
-open "$ticktick_url"
-
-echo "Task creation window should open in TickTick."
-echo "Please check TickTick and confirm the task details."
+# Display task details
 echo "\nTask details:"
 echo "- Title: $TASK_TITLE"
-echo "- Time: $TASK_TIME"
+echo "- Original Time: $ORIGINAL_TIME"
+echo "- Task Start Time: $TASK_DUE_DATE $TASK_DUE_TIME"
 if [[ -n "$TASK_ASSIGNEE" ]]; then
     echo "- Assignee: $TASK_ASSIGNEE"
 fi
 if [[ -n "$TASK_LIST" ]]; then
     echo "- List: $TASK_LIST"
 fi
+
+# Create the task without confirmation
+# Open the URL
+echo "\nOpening official TickTick URL: $ticktick_url"
+open "$ticktick_url"
+
+echo "\nTask creation window should open in TickTick."
+echo "Please check TickTick and confirm the task details."
