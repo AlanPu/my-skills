@@ -20,6 +20,12 @@ PDF 页面操作专家，支持复制、删除、移动指定页面
 ### video-downloader
 Downloads videos from various sites using yt-dlp. Invoke when user provides a video link and requests to download it.
 
+### anysearch-skill
+Real-time search engine supporting web search, vertical domain search (23 domains), parallel batch search, and URL content extraction.
+
+### youtube-downloader
+Download YouTube videos with customizable quality and format options. Use this skill when the user asks to download, save, or grab YouTube videos.
+
 ## 使用方法
 1. 在 Trae IDE 中，当遇到对应场景时，系统会自动调用相应的技能
 2. 也可以手动指定使用某个技能来完成特定任务
