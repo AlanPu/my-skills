@@ -1,1 +1,13 @@
+# macOS
 .DS_Store
+._*
+.AppleDouble
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# secrets
+.env
