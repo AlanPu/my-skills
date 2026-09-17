@@ -1,9 +1,28 @@
 <!DOCTYPE html>
+<!--
+  ============================================================================
+  FCE 词汇实战示范文 —— 页面模板（template.html）
+  ============================================================================
+  用法：复制本文件 → 替换下面这些内容 → 就是一篇新的学习页
+    ① <p class="passage" id="en">      英文原文（高亮用 <span class="hl hl-a|hl-b" data-v="key">）
+    ② <p class="passage cn" id="cn">   中文译文（高亮与①一一对应）
+    ③ 第 ③ 区块                         平淡句 → 高级句
+    ④ 第 ④ 区块                         按体裁换表单（见 references/genres.md 对应卡片）
+    ⑤ <tbody id="vocabBody">           由 JS 从 V / ORDER / SHORT / CL 生成，不用手改
+    ⑥ 第 ⑥ 区块                         高频易错点
+    + JS 里的 V / ORDER / SHORT / CL    四张映射表必须同步
+  已内建不要动的部分：
+    · 打印 / 导出 PDF 支持（@page + @media print + #printAppendix + 工具栏按钮）
+      —— 打印时自动切浅色、隐藏右侧交互面板、把 12 个词条全部铺开，并用实线/虚线区分两类词
+    · 词数自动统计（<span id="wc"> / id="wc2"），不要手写数字
+  导出 PDF：python3 assets/export_pdf.py <页面.html>
+  ============================================================================
+-->
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FCE 词汇实战 · The Quiet Scientist</title>
+<title>FCE 词汇实战 ③ · A Place Worth the Journey</title>
 <style>
   :root{
     --bg:#0d1117;
@@ -35,7 +54,6 @@
   }
   .wrap{max-width:1180px;margin:0 auto;padding:36px 24px 72px;}
 
-  /* ---------- header ---------- */
   header.head{margin-bottom:26px;}
   .kicker{
     display:inline-block;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
@@ -53,6 +71,7 @@
   .chip b{color:var(--text);font-weight:600;}
   .chip.blue{border-color:rgba(121,192,255,.3);}
   .chip.gold{border-color:rgba(255,212,121,.3);}
+  .chip.hot{border-color:rgba(86,211,100,.4);color:#9be8a5;}
 
   .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0 0;}
   .tgl{
@@ -63,7 +82,6 @@
   .tgl:hover{color:var(--text);border-color:#3a4553;}
   .tgl.on{color:var(--bg);background:var(--a);border-color:var(--a);font-weight:600;}
 
-  /* ---------- layout ---------- */
   .grid{display:grid;grid-template-columns:minmax(0,1.62fr) minmax(0,1fr);gap:22px;align-items:start;}
   @media (max-width:920px){.grid{grid-template-columns:1fr;}}
 
@@ -77,7 +95,6 @@
   }
   .card h2 .note{font-size:12px;color:var(--dim);font-weight:400;letter-spacing:0;}
 
-  /* ---------- passage ---------- */
   .passage{font-size:17.5px;line-height:2.05;margin:0;font-family:Georgia,"Times New Roman","Songti SC",serif;}
   .passage.cn{font-family:inherit;font-size:15.5px;line-height:2.1;color:#c9d5e1;}
 
@@ -96,7 +113,6 @@
   body.no-hl .hl{background:transparent;color:inherit;border-bottom-color:transparent;cursor:default;}
   body.no-hl .hl.active{box-shadow:none;background:transparent;}
 
-  /* ---------- right column ---------- */
   .sticky{position:sticky;top:24px;}
   @media (max-width:920px){.sticky{position:static;}}
   .detail .empty{color:var(--dim);font-size:13.5px;line-height:1.9;}
@@ -121,7 +137,7 @@
     font-size:13.5px;color:#c2cedb;padding:3px 0 3px 14px;position:relative;
     font-family:"SF Mono",Menlo,monospace;
   }
-  .blk li::before{content:"›";position:absolute;left:2px;color:var(--a);font-weight:700;}
+  .blk li::before{content:"\203A";position:absolute;left:2px;color:var(--a);font-weight:700;}
   .blk.t-amber li::before{color:var(--b);}
   .ex{
     font-family:Georgia,"Times New Roman",serif;font-size:14.5px;color:#e6edf3;
@@ -138,7 +154,6 @@
     font-family:"SF Mono",Menlo,monospace;
   }
 
-  /* ---------- legend ---------- */
   .legend ul{list-style:none;margin:0;padding:0;}
   .legend li{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);padding:5px 0;line-height:1.65;}
   .dot{width:11px;height:11px;border-radius:3px;flex:0 0 auto;margin-top:6px;}
@@ -146,7 +161,6 @@
   .dot-b{background:var(--b);}
   .dot-c{background:var(--dim);}
 
-  /* ---------- tables ---------- */
   .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;}
   table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:760px;}
   th{
@@ -171,7 +185,6 @@
   td .ok{color:var(--good);}
   td .no{color:var(--bad);}
 
-  /* ---------- upgrade / template ---------- */
   .upg{display:grid;grid-template-columns:1fr;gap:0;}
   .upg-row{padding:13px 0;border-bottom:1px dashed var(--border);}
   .upg-row:last-child{border-bottom:none;}
@@ -186,29 +199,132 @@
   .upg-row .to em{font-style:normal;color:var(--good);font-weight:600;}
   .upg-row .why{font-size:12.6px;color:var(--dim);margin-top:6px;line-height:1.7;}
 
-  .tpl{counter-reset:step;list-style:none;margin:0;padding:0;}
-  .tpl li{
-    counter-increment:step;position:relative;padding:9px 0 9px 42px;
-    font-size:14px;line-height:1.8;color:#c9d5e1;border-bottom:1px dashed rgba(37,45,58,.8);
+  .cmpt td:first-child{white-space:nowrap;color:var(--muted);font-size:12.6px;font-weight:600;}
+  .cmpt td{font-family:Georgia,"Times New Roman",serif;font-size:13.6px;}
+  .cmpt td:first-child{font-family:inherit;}
+  .cmpt thead th:nth-child(2){color:var(--bad);}
+  .cmpt thead th:nth-child(3){color:var(--good);}
+  .cmpt td:nth-child(3) em{font-style:normal;color:var(--b);font-weight:600;}
+  .cmpt tbody tr{cursor:default;}
+
+  .rules{list-style:none;margin:16px 0 0;padding:0;counter-reset:r;}
+  .rules li{
+    counter-increment:r;position:relative;padding:8px 0 8px 40px;
+    font-size:13.4px;line-height:1.85;color:#c9d5e1;border-bottom:1px dashed rgba(37,45,58,.8);
   }
-  .tpl li:last-child{border-bottom:none;}
-  .tpl li::before{
-    content:counter(step);position:absolute;left:0;top:9px;
+  .rules li:last-child{border-bottom:none;}
+  .rules li::before{
+    content:counter(r);position:absolute;left:0;top:8px;
     width:24px;height:24px;border-radius:7px;background:var(--panel2);
-    border:1px solid var(--border);color:var(--a);font-size:12px;font-weight:700;
-    display:flex;align-items:center;justify-content:center;
+    border:1px solid var(--border);color:var(--b);font-size:12px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;font-family:-apple-system,sans-serif;
   }
-  .tpl li b{color:var(--a);font-weight:600;}
-  .tpl li i{font-style:normal;color:var(--b);}
-  .tpl li span.zh{color:var(--dim);font-size:12.8px;display:block;}
+  .rules li b{color:var(--b);font-weight:600;}
+
+  .route{list-style:none;margin:0;padding:0;}
+  .route li{
+    display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);
+    padding:8px 0;border-bottom:1px dashed rgba(37,45,58,.8);line-height:1.7;
+  }
+  .route li:last-child{border-bottom:none;}
+  .route .num{
+    flex:0 0 auto;width:20px;height:20px;border-radius:6px;background:var(--panel2);
+    border:1px solid var(--border);color:var(--dim);font-size:11.5px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;margin-top:3px;
+  }
+  .route li.now .num{color:var(--bg);background:var(--good);border-color:var(--good);}
+  .route li.now{color:#c9d5e1;}
+  .route b{color:var(--text);font-weight:600;}
 
   footer{margin-top:30px;color:var(--dim);font-size:12.5px;line-height:1.9;border-top:1px solid var(--border);padding-top:18px;}
 
+  /* ==================== 打印 / 导出 PDF ==================== */
+  @page{ size:A4; margin:13mm 12mm 15mm; }
+  .print-only{ display:none; }
+  /* 打印附录（页面上隐藏，@media print 里展开） */
+  #printAppendix .pe{ padding:9px 0; border-bottom:1px dashed var(--border); }
+  #printAppendix .pe:last-child{ border-bottom:none; }
+  #printAppendix .pe-head{ display:flex; flex-wrap:wrap; align-items:baseline; gap:8px; margin-bottom:5px; }
+  #printAppendix .pe-head b{ font-size:15px; color:var(--a); font-weight:650; }
+  #printAppendix .pe-head i{ font-style:italic; font-size:12px; color:var(--dim); }
+  #printAppendix .pe-ipa{ font-family:"SF Mono",Menlo,monospace; font-size:12px; color:var(--muted); }
+  #printAppendix .pe-zh{ width:100%; font-size:13px; color:#c9d5e1; }
+  #printAppendix .pe-tag{ font-size:10.5px; font-weight:700; border-radius:4px; padding:1px 6px; }
+  #printAppendix .pe-tag.t-A{ color:var(--a); background:var(--a-bg); }
+  #printAppendix .pe-tag.t-B{ color:var(--b); background:var(--b-bg); }
+  #printAppendix .pe-body{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.65fr); gap:14px; }
+  #printAppendix .pe-lb{ display:block; font-size:10.5px; letter-spacing:.09em; color:var(--dim); margin-bottom:3px; }
+  #printAppendix ul{ margin:0; padding-left:0; list-style:none; }
+  #printAppendix li{ font-family:"SF Mono",Menlo,monospace; font-size:12px; color:#c2cedb; padding:2px 0 2px 12px; position:relative; }
+  #printAppendix li::before{ content:"\203A"; position:absolute; left:0; color:var(--a); }
+  #printAppendix .pe-ex{ font-family:Georgia,"Times New Roman",serif; font-size:13px; color:#e6edf3; margin:0 0 3px; line-height:1.6; }
+  #printAppendix .pe-exzh{ font-size:12px; color:var(--muted); margin:0 0 4px; }
+  #printAppendix .pe-warn{ font-size:12px; color:#ffc9c4; margin:0 0 3px; }
+  #printAppendix .pe-swap{ font-size:12px; color:#b7f0c0; font-family:"SF Mono",Menlo,monospace; margin:0; }
+  .print-legend{ font-size:12.5px; color:var(--muted); line-height:1.8; }
+
   @media print{
-    body{background:#fff;color:#111;}
-    .card{background:#fff;border-color:#ddd;break-inside:avoid;}
-    .toolbar,.sticky-hint{display:none;}
-    .passage{color:#000;}
+    :root{
+      --bg:#fff; --panel:#fff; --panel2:#f4f6f9; --border:#c8d0d9;
+      --text:#111418; --muted:#4a5560; --dim:#6b7280;
+      --a:#0b4a8f; --a-bg:#e9f2fc; --a-bd:#0b4a8f;
+      --b:#8a5400; --b-bg:#fdf4dc; --b-bd:#8a5400;
+      --good:#1a7f37; --bad:#b3261e;
+    }
+    html,body{ background:#fff !important; color:var(--text); }
+    body{ font-size:10.5pt; line-height:1.55; }
+    .wrap{ max-width:none; padding:0; }
+    /* 屏幕专用的交互物一律不打印 */
+    .toolbar, aside.col-right, .no-print{ display:none !important; }
+    /* 打印专用的块展开 */
+    .print-only{ display:block !important; }
+    .print-legend{ display:block !important; margin:0 0 9px; padding:7px 10px;
+                   background:#f4f6f9; border:1px solid var(--border); border-radius:5px;
+                   color:#374151; font-size:9pt; }
+    .print-legend .lg-a{ color:var(--a); border-bottom:2px solid var(--a); font-weight:600; }
+    .print-legend .lg-b{ color:#7a4a00; border-bottom:2px dashed #8a5400; font-weight:600; }
+    /* 卡片轻量化 */
+    .card{ background:#fff; border:1px solid var(--border); border-radius:6px;
+           padding:11px 13px; margin-bottom:9px; box-shadow:none; }
+    .card h2{ font-size:11pt; margin-bottom:7px; }
+    .card h2 .note{ font-size:8.5pt; }
+    .passage{ font-size:11pt; line-height:1.75; color:#111418;
+              font-family:Georgia,"Times New Roman","Songti SC",serif; }
+    .passage.cn{ font-size:10pt; color:#1f2933; }
+    /* 高亮：改成「实线 / 虚线」区分两类，黑白复印也分得清 */
+    .hl{ cursor:auto; font-weight:600; padding:0 1px; }
+    .hl-a{ color:var(--a); background:var(--a-bg); border-bottom:2px solid var(--a); }
+    .hl-b{ color:#7a4a00; background:var(--b-bg); border-bottom:2px dashed #8a5400; }
+    .hl.active{ box-shadow:none; }
+    /* 表格 */
+    table{ min-width:0; font-size:9pt; }
+    th{ background:#eef1f5; color:#374151; padding:5px 7px; font-size:8pt; letter-spacing:.05em; }
+    td{ padding:5px 7px; color:#1f2933; border-bottom:1px solid #dde3e9; line-height:1.5; }
+    thead{ display:table-header-group; }
+    tr{ break-inside:avoid; page-break-inside:avoid; }
+    code{ background:#eef1f5; border-color:#dde3e9; color:#1f2933; font-size:8.5pt; }
+    .tbl-wrap{ border-color:var(--border); border-radius:5px; overflow:visible; }
+    .badge.a{ color:var(--a); background:var(--a-bg); }
+    .badge.b{ color:#7a4a00; background:var(--b-bg); }
+    /* 分页控制 */
+    #cardCn, .upg-row, #printAppendix .pe, .rules li, .tpl li{
+      break-inside:avoid; page-break-inside:avoid;
+    }
+    .card h2, #printAppendix .pe-head{ break-after:avoid; page-break-after:avoid; }
+    /* 附录内文字：深色底 → 浅色底 */
+    #printAppendix .pe-zh, #printAppendix li, .tpl li, .rules li{ color:#1f2933; }
+    #printAppendix .pe-ex{ color:#111418; }
+    #printAppendix .pe-exzh, .upg-row .why, .cmpt td:first-child{ color:#4a5560; }
+    #printAppendix .pe-warn, .warn p{ color:#b3261e; }
+    #printAppendix .pe-swap, .swap p{ color:#1a7f37; }
+    .upg-row .from{ color:#6b7280; }
+    .upg-row .from .lbl{ color:#374151; background:#e8ecf1; }
+    .upg-row .to .lbl{ background:#1a7f37; color:#fff; }
+    .upg-row .to{ color:#111418; }
+    .rules li::before, .tpl li::before{ background:#f4f6f9; color:var(--a); border-color:var(--border); }
+    .warn h4{ color:#b3261e; }
+    footer{ color:#6b7280; border-top-color:var(--border); }
+    a{ color:var(--a); }
   }
 </style>
 </head>
@@ -216,81 +332,102 @@
 <div class="wrap">
 
   <header class="head">
-    <div class="kicker">FCE · B2 First · Vocabulary in Context</div>
-    <h1>The Quiet Scientist —— <em>12 个 FCE 高频词条，一篇短文串起来</em></h1>
-    <p class="sub">仿你老师范文的「人物传记」文体，把 FCE 核心词放进真实句子里。点击文中任何高亮词，右侧立刻显示音标、释义、搭配、例句和易错点。</p>
+    <div class="kicker">FCE · B2 First · Vocabulary in Context 03</div>
+    <h1>A Place Worth the Journey —— <em>换个体裁：地点 / 旅行描写</em></h1>
+    <p class="sub">前两篇都是人物传记，这一篇换掉整个词汇场：不再写「一个人做了什么」，而是写「一个地方长什么样、它让我感觉如何」。练的是描写类作文最缺的两样东西 —— 具体画面和真实感受。</p>
     <div class="chips">
-      <span class="chip">全文 <b>99</b> words</span>
+      <span class="chip">全文 <b id="wc">—</b> words</span>
       <span class="chip blue">FCE 核心词 <b>7</b> 个</span>
       <span class="chip gold">高级搭配/句型 <b>5</b> 个</span>
-      <span class="chip">主题：屠呦呦 · 人物介绍</span>
+      <span class="chip hot">体裁：地点 / 旅行 · 元阳梯田</span>
     </div>
     <div class="toolbar">
       <button class="tgl on" id="btnHl">高亮：开</button>
       <button class="tgl on" id="btnCn">中文译文：显示</button>
       <button class="tgl" id="btnAll">展开全部讲解</button>
+      <button class="tgl" id="btnPrint" title="打印时自动展开全部 12 个词条、隐藏右侧交互面板，并切换为浅色版式">🖨 打印 / 导出 PDF</button>
     </div>
   </header>
 
   <div class="grid">
-    <!-- ================= 左栏 ================= -->
     <div class="col-left">
 
       <div class="card">
         <h2>① 英文原文 <span class="note">点击高亮词查看讲解 · 蓝色 = FCE 核心词 · 黄色 = 高级搭配</span></h2>
-        <p class="passage" id="en">Tu Youyou was born in Ningbo in 1930. <span class="hl hl-b" data-v="earlyage">From an early age</span>, she showed <span class="hl hl-a" data-v="remarkable">remarkable</span> talent for science. After graduating from university, she <span class="hl hl-a" data-v="dedicate">dedicated herself to</span> the study of traditional Chinese medicine. In 1969, she <span class="hl hl-b" data-v="appoint">was appointed to</span> lead a secret research project, and she <span class="hl hl-a" data-v="tirelessly">worked tirelessly</span> for years, testing hundreds of ancient remedies. Her <span class="hl hl-a" data-v="extraordinary">extraordinary</span> <span class="hl hl-a" data-v="persistence">persistence</span> finally <span class="hl hl-b" data-v="payoff">paid off</span>: she discovered artemisinin, a drug that has saved millions of lives. <span class="hl hl-b" data-v="recognition">In recognition of</span> her <span class="hl hl-a" data-v="contribution">outstanding contribution</span>, she <span class="hl hl-a" data-v="award">was awarded</span> the Nobel Prize in 2015. Today she remains <span class="hl hl-b" data-v="inspiration">a source of inspiration to</span> young scientists all over the world.</p>
+        <p class="passage" id="en">Last winter I travelled to Yuanyang, a <span class="hl hl-a" data-v="remote">remote</span> county in southern Yunnan. <span class="hl hl-b" data-v="themoment">The moment</span> I reached the top of the mountain, the <span class="hl hl-a" data-v="scenery">scenery</span> <span class="hl hl-b" data-v="breath">took my breath away</span>. It is <span class="hl hl-b" data-v="oneofthemost">one of the most spectacular</span> sights in China: thousands of rice terraces lie below, shining in the early morning sun. I spent three days <span class="hl hl-a" data-v="wander">wandering</span> through the Hani villages, and the <span class="hl hl-a" data-v="peaceful">peaceful</span> <span class="hl hl-a" data-v="atmosphere">atmosphere</span> was exactly what I needed. <span class="hl hl-b" data-v="getaway">Getting away from it all</span> for a few days made me <span class="hl hl-a" data-v="realise">realise</span> how noisy my city life had become. The road is long and the hotels are simple, but the <span class="hl hl-a" data-v="journey">journey</span> is <span class="hl hl-b" data-v="wellworth">well worth it</span>.</p>
       </div>
 
+      <p class="print-legend print-only">图例：<span class="lg-a">实线下划线</span> = FCE 核心词（B2 必备，写作文直接用）；<span class="lg-b">虚线下划线</span> = 高级搭配 / 句型（让文章「像范文」的关键）。本页由 FCE 词汇实战示范文生成的打印版，右侧交互面板已收起，全部 12 个词条的详解见文末附录。</p>
       <div class="card" id="cardCn">
         <h2>② 中文译文 <span class="note">画线处与英文高亮一一对应</span></h2>
-        <p class="passage cn" id="cn">屠呦呦 1930 年出生于宁波。<span class="hl hl-b" data-v="earlyage">从小</span>，她就展现出<span class="hl hl-a" data-v="remarkable">非凡的</span>科学天赋。大学毕业后，她<span class="hl hl-a" data-v="dedicate">投身于</span>中医药研究。1969 年，她<span class="hl hl-b" data-v="appoint">被任命</span>领导一个秘密研究项目，多年来她<span class="hl hl-a" data-v="tirelessly">不知疲倦地工作</span>，测试了数百种古代药方。她<span class="hl hl-a" data-v="extraordinary">非凡的</span><span class="hl hl-a" data-v="persistence">坚持</span>终于<span class="hl hl-b" data-v="payoff">得到了回报</span>：她发现了青蒿素——一种已经拯救了数百万人生命的药物。<span class="hl hl-b" data-v="recognition">为表彰</span>她<span class="hl hl-a" data-v="contribution">杰出的贡献</span>，2015 年她<span class="hl hl-a" data-v="award">被授予</span>诺贝尔奖。如今，她仍然是全世界年轻科学家们的<span class="hl hl-b" data-v="inspiration">灵感源泉</span>。</p>
+        <p class="passage cn" id="cn">去年冬天，我去了云南南部一个<span class="hl hl-a" data-v="remote">偏远</span>的县城——元阳。<span class="hl hl-b" data-v="themoment">一</span>登上山顶，那里的<span class="hl hl-a" data-v="scenery">风景</span>就<span class="hl hl-b" data-v="breath">让我惊叹不已</span>。这是<span class="hl hl-b" data-v="oneofthemost">中国最壮观的景色之一</span>：数千级梯田铺展在脚下，在清晨的阳光里闪闪发亮。我花了三天在哈尼族村寨间<span class="hl hl-a" data-v="wander">漫步</span>，那种<span class="hl hl-a" data-v="peaceful">宁静</span>的<span class="hl hl-a" data-v="atmosphere">气氛</span>正是我需要的。<span class="hl hl-b" data-v="getaway">彻底逃离日常、放松几天</span>，让我<span class="hl hl-a" data-v="realise">意识到</span>自己的城市生活已经变得多么嘈杂。路途遥远，旅馆也很简陋，但这趟<span class="hl hl-a" data-v="journey">旅程</span>确实<span class="hl hl-b" data-v="wellworth">非常值得</span>。</p>
       </div>
 
       <div class="card">
-        <h2>③ 你的句子 → 升级版 <span class="note">对比你自己的作文，看差距在哪一个词上</span></h2>
+        <h2>③ 平淡句 → 高级句 <span class="note">全是考场上最常见的「零信息」句子 —— 看看怎么写才有画面</span></h2>
         <div class="upg">
           <div class="upg-row">
-            <div class="from"><span class="lbl">你写的</span>He was a great Chinese scientist. / He spent many years researching the nuclear submarine.</div>
-            <div class="to"><span class="lbl">升级</span>He was a <em>remarkable</em> Chinese scientist who <em>dedicated</em> many years <em>to researching</em> the nuclear submarine.</div>
-            <div class="why">① great → remarkable（正式、更高级）② spend time doing → dedicate time <b>to</b> doing（to 是介词，后接动名词）③ 用定语从句把两个短句合并，句子立刻有层次。</div>
+            <div class="from"><span class="lbl">常见低分句</span>The scenery was very beautiful.</div>
+            <div class="to"><span class="lbl">升级</span>The scenery <em>took my breath away</em>.</div>
+            <div class="why">very beautiful 是零信息形容词，阅卷老师一年看几千遍。take sb's breath away 直接写出「美到说不出话」的反应 —— 描写类作文的核心不是堆形容词，而是给反应。</div>
           </div>
           <div class="upg-row">
-            <div class="from"><span class="lbl">你写的</span>…he still work very hard.</div>
-            <div class="to"><span class="lbl">升级</span>…he <em>worked tirelessly</em> for decades.</div>
-            <div class="why">语法硬伤：he + 过去时，必须是 <code>worked</code>；同时 work very hard 太平淡，换成 work tirelessly 立刻上一个档次。</div>
+            <div class="from"><span class="lbl">常见低分句</span>It is a very nice place.</div>
+            <div class="to"><span class="lbl">升级</span>It is <em>one of the most spectacular</em> places I have ever visited.</div>
+            <div class="why">"one of the most + 形容词最高级 + 名词复数 + I have ever + 过去分词"给评价加上「阅历」分量。注意两处硬性要求：名词必须复数，后面从句用现在完成时。</div>
           </div>
           <div class="upg-row">
-            <div class="from"><span class="lbl">你写的</span>Because of his huge devotion to the research, people call him "The father of …".</div>
-            <div class="to"><span class="lbl">升级</span><em>Thanks to</em> his <em>extraordinary dedication</em>, he <em>is widely regarded as</em> "The Father of …".</div>
-            <div class="why">because of → thanks to（含"多亏了"的庆幸语气）；people call him 太口语，改被动 be widely regarded as 更客观正式；huge → extraordinary。</div>
+            <div class="from"><span class="lbl">常见低分句</span>I walked around the old town.</div>
+            <div class="to"><span class="lbl">升级</span>I spent the afternoon <em>wandering</em> through the old town.</div>
+            <div class="why">walk around → wander through（无目的地、悠闲地走），旅行味道就出来了。spend + 时间 + doing 也让句子比简单句更有节奏。</div>
           </div>
           <div class="upg-row">
-            <div class="from"><span class="lbl">你写的</span>He also received the Medal of the Republic in 2019.</div>
-            <div class="to"><span class="lbl">升级</span><em>In recognition of</em> his achievements, he <em>was awarded</em> the Medal of the Republic in 2019.</div>
-            <div class="why">receive → be awarded（被动语态更正式）；加上 In recognition of + 名词，把"为什么得奖"一句话交代清楚，句式也高级了。</div>
+            <div class="from"><span class="lbl">常见低分句</span>The place was quiet and I felt relaxed.</div>
+            <div class="to"><span class="lbl">升级</span>The <em>peaceful atmosphere</em> was exactly what I needed.</div>
+            <div class="why">两个并列短句合并成一个名词短语作主语，句子立刻紧凑；exactly what I needed 把模糊的「感觉」落实成「需求」，逻辑更清楚。</div>
+          </div>
+          <div class="upg-row">
+            <div class="from"><span class="lbl">常见低分句</span>I want to go there again. It is a good place.</div>
+            <div class="to"><span class="lbl">升级</span>I would love to go back. The road is long, but the journey is <em>well worth it</em>.</div>
+            <div class="why">want to → would love to（更客气、更书面）；结尾用「先让步、后肯定」收束，比 It is a good place 有说服力得多。注意 well worth，不是 very worth。</div>
           </div>
         </div>
       </div>
 
       <div class="card">
-        <h2>④ 写作迁移：人物介绍类作文的 8 步骨架 <span class="note">FCE Part 2 Article 约 140–190 词，本文 99 词正好是「人物简介段」的骨架</span></h2>
-        <ol class="tpl">
-          <li><b>X was born in + 地点 + in + 年份.</b> / X came from a poor family in …
-              <span class="zh">交代出生地与年份，一句话带过，别铺开写。</span></li>
-          <li><b>From an early age, he/she showed a remarkable talent for …</b>
-              <span class="zh">自幼显露天赋 —— 比 "When he was young, he liked…" 高级得多。</span></li>
-          <li><b>After graduating from …, he/she dedicated himself/herself to …</b>
-              <span class="zh">毕业后投身某项事业。to 后面跟名词或 doing。</span></li>
-          <li><i>In 1969, he/she was appointed to lead / was chosen to head …</i>
-              <span class="zh">关键转折事件，用被动语态显得客观正式。</span></li>
-          <li><b>Despite + 名词/doing, he/she worked tirelessly …</b>
-              <span class="zh">先写困难，再写努力，制造对比。Despite 后不接完整句子。</span></li>
-          <li><i>Thanks to his/her outstanding contribution, …</i> / <i>His/Her persistence finally paid off when …</i>
-              <span class="zh">结果句。两个万能句式任选，都自带"努力→收获"的逻辑。</span></li>
-          <li><b>In recognition of his/her achievements, he/she was awarded …</b>
-              <span class="zh">荣誉奖项，附上"为表彰……"的原因，信息更完整。</span></li>
-          <li><i>Today he/she remains a source of inspiration to …</i>
-              <span class="zh">结尾升华。比 "He is a good example for us" 强太多。</span></li>
+        <h2>④ 地点 / 旅行类作文：7 个功能格，一句话两种写法 <span class="note">左边是大多数人的写法，右边是能拿分的写法</span></h2>
+        <div class="tbl-wrap">
+          <table class="cmpt">
+            <thead><tr><th>写作功能</th><th>及格写法</th><th>高级写法</th></tr></thead>
+            <tbody>
+              <tr><td>交代位置</td>
+                  <td>It is in Yunnan.</td>
+                  <td>Yuanyang is a <em>remote</em> county in southern Yunnan.</td></tr>
+              <tr><td>第一印象</td>
+                  <td>The scenery was beautiful.</td>
+                  <td><em>The moment</em> I reached the top, the scenery <em>took my breath away</em>.</td></tr>
+              <tr><td>具体描写<br><span style="color:#6b7280;font-size:11.5px;">（必须有画面）</span></td>
+                  <td>There were a lot of rice terraces.</td>
+                  <td>Thousands of rice terraces lie below <b style="color:#c2cedb;font-weight:400;">like broken mirrors</b>, shining in the early morning sun.</td></tr>
+              <tr><td>你的活动</td>
+                  <td>I walked around the villages.</td>
+                  <td>I spent three days <em>wandering</em> through the Hani villages.</td></tr>
+              <tr><td>氛围感受</td>
+                  <td>It was quiet and I liked it.</td>
+                  <td>The <em>peaceful atmosphere</em> was exactly what I needed.</td></tr>
+              <tr><td>个人收获</td>
+                  <td>I felt relaxed after the trip.</td>
+                  <td><em>Getting away from it all</em> made me <em>realise</em> how noisy my city life had become.</td></tr>
+              <tr><td>推荐收尾</td>
+                  <td>You should go there.</td>
+                  <td>The road is long, but the <em>journey</em> is <em>well worth it</em>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ol class="rules">
+          <li><b>别用 very + 形容词。</b>描写类作文最忌讳堆 very beautiful / very nice / very big。换成一个<b>具体的画面</b>（broken mirrors, shining in the sun）或一个<b>真实反应</b>（took my breath away），信息量立刻翻倍。</li>
+          <li><b>每段至少一个感官细节。</b>光（shining in the morning sun）、声音、气味、温度、触感 —— 随便挑一个塞进去，文章就从「介绍」变成「经历」。</li>
+          <li><b>只写景、不写人 = 不完整的作文。</b>FCE 的描写题真正考的是「这个经历对你意味着什么」。所以结尾必须落到自己身上：I needed / made me realise / I would love to go back。</li>
         </ol>
       </div>
 
@@ -306,18 +443,23 @@
         </div>
       </div>
 
+      <div class="card print-only" id="printAppendix">
+        <h2>附：12 个词条全解 <span class="note">打印版专用 —— 屏幕上这里是右侧可点击的详情卡</span></h2>
+        <div id="printAppendixBody"></div>
+      </div>
+
       <div class="card">
-        <h2>⑥ 六个高频易错点</h2>
+        <h2>⑥ 六个高频易错点 <span class="note">描写类作文里最容易翻车的地方</span></h2>
         <div class="tbl-wrap">
           <table>
             <thead><tr><th>易错</th><th>正确</th><th>说明</th></tr></thead>
             <tbody>
-              <tr><td class="w"><span class="no">✗</span> dedicate oneself to <b>do</b> sth</td><td class="w"><span class="ok">✓</span> dedicate oneself to <b>doing</b> sth</td><td>这里 to 是介词，不是不定式符号。同理 be used to doing / look forward to doing。</td></tr>
-              <tr><td class="w"><span class="no">✗</span> persist <b>to</b> do sth</td><td class="w"><span class="ok">✓</span> persist <b>in</b> doing sth</td><td>persist 固定跟 in。名词 persistence 常用 show great persistence。</td></tr>
-              <tr><td class="w"><span class="no">✗</span> contribution <b>for</b> sth</td><td class="w"><span class="ok">✓</span> contribution <b>to</b> sth</td><td>动词 contribute to 也是 to。make a contribution to 是万能搭配。</td></tr>
-              <tr><td class="w"><span class="no">✗</span> thanks <b>for</b> his help, we finished…</td><td class="w"><span class="ok">✓</span> thanks <b>to</b> his help, we finished…</td><td>thanks to = 多亏（表示原因）；thanks for = 谢谢（表示感谢）。别混。</td></tr>
-              <tr><td class="w"><span class="no">✗</span> He awarded the prize.</td><td class="w"><span class="ok">✓</span> He <b>was awarded</b> the prize.</td><td>漏掉 be 意思就反了 —— 变成"他给别人颁奖"。主动是 award sb sth。</td></tr>
-              <tr><td class="w"><span class="no">✗</span> in recognition <b>for</b> his work</td><td class="w"><span class="ok">✓</span> in recognition <b>of</b> his work</td><td>固定搭配 in recognition of，用于颁奖、致谢、纪念等正式场合。</td></tr>
+              <tr><td class="w"><span class="no">✗</span> a beautiful <b>scenery</b> / sceneries</td><td class="w"><span class="ok">✓</span> beautiful <b>scenery</b></td><td>scenery 是集合名词，<b>永远不可数</b>，前面不能加 a、不能变复数。单指某处风景用 a view / a sight。</td></tr>
+              <tr><td class="w"><span class="no">✗</span> It took my <b>breathe</b> away.</td><td class="w"><span class="ok">✓</span> It took my <b>breath</b> away.</td><td>breath 是名词（呼吸、一口气），breathe 是动词（呼吸）。这个短语里要用名词。另外主语不能是「我」。</td></tr>
+              <tr><td class="w"><span class="no">✗</span> It is <b>worth to visit</b>.</td><td class="w"><span class="ok">✓</span> It is <b>worth visiting</b>. / It is <b>well worth it</b>.</td><td>worth 后面接动名词或 it，<b>不接不定式</b>。而且只能用 well 修饰：❌ very worth。</td></tr>
+              <tr><td class="w"><span class="no">✗</span> I <b>wondered</b> through the old town.</td><td class="w"><span class="ok">✓</span> I <b>wandered</b> through the old town.</td><td>wander = 漫步；wonder = 想知道。只差一个字母，意思毫无关系，是最常见的拼写失分点。</td></tr>
+              <tr><td class="w"><span class="no">✗</span> The village <b>lays</b> in the valley.</td><td class="w"><span class="ok">✓</span> The village <b>lies</b> in the valley.</td><td>lie（位于 / 躺）：lie – lay – lain；lay（放置）：lay – laid – laid。写「某地坐落在……」必须用 lies。</td></tr>
+              <tr><td class="w"><span class="no">✗</span> The atmosphere was nice and I <b>like</b> it.</td><td class="w"><span class="ok">✓</span> The atmosphere was peaceful and I <b>liked</b> it.</td><td>两处问题：① 回忆类作文要统一用过去时；② 形容 atmosphere 要用 peaceful / relaxed / friendly，不用 nice。</td></tr>
             </tbody>
           </table>
         </div>
@@ -325,7 +467,6 @@
 
     </div>
 
-    <!-- ================= 右栏 ================= -->
     <aside class="col-right">
       <div class="card detail sticky" id="detail">
         <div class="empty">
@@ -337,7 +478,7 @@
 
       <div class="card">
         <h2>图例</h2>
-        <ul class="legend" style="list-style:none;margin:0;padding:0;">
+        <ul class="legend">
           <li><span class="dot dot-a"></span><span><b style="color:var(--a)">蓝色</b> = FCE 核心词（B2 必备，写作文直接用）</span></li>
           <li><span class="dot dot-b"></span><span><b style="color:var(--b)">黄色</b> = 高级搭配 / 句型（让文章"像范文"的关键）</span></li>
           <li><span class="dot dot-c"></span><span>灰色小字 = 音标、词性、易错点</span></li>
@@ -345,169 +486,191 @@
       </div>
 
       <div class="card">
-        <h2>怎么用这一页 <span class="note">建议 3 遍</span></h2>
+        <h2>三篇路线图</h2>
+        <ul class="route">
+          <li><span class="num">1</span><span><b>The Quiet Scientist</b><br>屠呦呦 · 人物 / 科学 · 99 词</span></li>
+          <li><span class="num">2</span><span><b>A Teacher Who Changed Their Lives</b><br>张桂梅 · 人物 / 教育 · 107 词</span></li>
+          <li class="now"><span class="num">3</span><span><b>A Place Worth the Journey</b><br>元阳梯田 · 地点 / 旅行 · 本篇</span></li>
+        </ul>
+        <p style="font-size:12.8px;color:var(--dim);line-height:1.85;margin:12px 0 0;">
+          人物 + 地点已经覆盖 FCE Part 2 最常考的两类「描述题」。三篇词表互不重叠，合计 36 个表达。<br>
+          下一步建议补「<b style="color:var(--muted)">观点 / 建议类</b>」（谈利弊、给建议），那是 Part 1 Email 和 Part 2 Essay 的词汇场。
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>这一篇怎么用</h2>
         <p style="font-size:13.5px;line-height:1.9;color:#c2cedb;margin:0;">
-          <b style="color:var(--a)">第 1 遍</b>：点「高亮：关」，把英文通读两遍，先不管生词，只看故事。<br><br>
-          <b style="color:var(--a)">第 2 遍</b>：打开高亮，逐个点词看搭配和例句 —— 重点记<b>搭配</b>（dedicate…<b>to</b> doing），不要只记中文意思。<br><br>
-          <b style="color:var(--a)">第 3 遍</b>：把中文译文遮住，用第 ④ 节的 8 步骨架，自己复述一遍黄旭华的故事，强迫自己用上 remarkable / dedicated / tirelessly / In recognition of。
+          <b style="color:var(--a)">第 1 遍</b>：点「高亮：关」通读两遍，注意它和第二篇的差别 —— 这篇几乎没有"事件"，全在写感受。<br><br>
+          <b style="color:var(--a)">第 2 遍</b>：打开高亮逐个点词。重点背 <b>take sb's breath away</b>、<b>one of the most…</b>、<b>be well worth it</b> 这三个句型，它们是描写类作文的骨架。<br><br>
+          <b style="color:var(--a)">第 3 遍</b>：拿第 ④ 节的 7 个功能格，换一个你自己真去过的地方（不用著名景点，学校旁边的小山、老家的一条巷子都行），每格挑一种写法，拼出 100 词。
         </p>
       </div>
     </aside>
   </div>
 
   <footer>
-    The Quiet Scientist · 全文 99 词 · 蓝色 FCE 核心词 7 个 / 黄色高级搭配 5 个<br>
-    注：为了集中展示，本文高亮密度偏高（约 25%）。真实写作中一个段落用 2–3 个高级表达就够了，堆太多反而扣分。
+    A Place Worth the Journey · 全文 <span id="wc2">—</span> 词 · 蓝色 FCE 核心词 7 个 / 黄色高级搭配 5 个<br>
+    第 ③ 篇换了体裁：人物传记 → 地点 / 旅行描写。三篇词表互不重叠，合计 36 个高频表达。<br>
+    注：为了集中展示，本篇高亮密度偏高。真实写作中一个段落用 2–3 个高级表达就够了，堆太多反而扣分。
   </footer>
 
 </div>
 
 <script>
 const V = {
-  earlyage:{
-    type:'B', pos:'介词短语', term:'from an early age', ipa:'/frəm ən ˈɜːli eɪdʒ/',
-    zh:'从很小的时候起；自幼',
-    usage:'放在句首作状语，用来介绍人物的早期经历，比 "When he was young" 更简洁正式。常与 showed / began to / was fascinated by 搭配。',
-    colloc:['From an early age, she showed a talent for...','From an early age, he was fascinated by...'],
-    ex:'From an early age, she showed a deep interest in music.',
-    exzh:'她自幼就对音乐表现出浓厚的兴趣。',
-    warn:'age 前不加冠词；不能写成 "from early age"。',
-    swap:'When he was a child → From an early age'
+  remote:{
+    type:'A', pos:'adj.', term:'remote', ipa:'/rɪˈməʊt/',
+    zh:'偏远的；遥远的；偏僻的',
+    usage:'形容离城市远、交通不便的地方：a remote village / island / area。也可表示「（机会、可能性）微小的」：a remote chance。写旅行、乡村题材时是核心形容词，比 far away 高级得多。',
+    colloc:['a remote village / county / island','a remote part of the country','a remote chance'],
+    ex:'Last winter I travelled to Yuanyang, a remote county in southern Yunnan.',
+    exzh:'去年冬天，我去了云南南部一个偏远的县城——元阳。',
+    warn:'remote 直接修饰地方；说「离某地远」要用 far (away) from，不能说 remote from the city。',
+    swap:'far away → remote'
   },
-  remarkable:{
-    type:'A', pos:'adj.', term:'remarkable', ipa:'/rɪˈmɑːkəbl/',
-    zh:'非凡的；卓越的；令人惊叹的',
-    usage:'比 good / great / nice 高级得多，用来夸能力、成就、进步、变化。副词 remarkably 表示「非常；惊人地」（remarkably successful）。名词是 remark（评论），意思完全不同。',
-    colloc:['a remarkable talent for sth','a remarkable achievement / success / improvement','It is remarkable that + 句子'],
-    ex:'She showed a remarkable talent for music when she was only five.',
-    exzh:'她五岁时就展现出非凡的音乐天赋。',
-    warn:'别和名词 remark（评论；言辞）混用，两者意思毫无关系。',
-    swap:'very good / great → remarkable'
+  scenery:{
+    type:'A', pos:'n.', term:'scenery', ipa:'/ˈsiːnəri/',
+    zh:'风景；景色（集合名词）',
+    usage:'指一个地区整体的自然风光，<b style="color:#79c0ff">永远不可数</b> —— 不能说 a scenery 或 sceneries。单指某一处风景要用 a view / a sight。论述性写作里也常用：beautiful scenery attracts tourists。',
+    colloc:['beautiful / spectacular scenery','enjoy / admire the scenery','the scenery changes'],
+    ex:'The moment I reached the top, the scenery took my breath away.',
+    exzh:'我一登上山顶，那里的风景就让我惊叹不已。',
+    warn:'❌ a beautiful scenery / sceneries → ✅ beautiful scenery（不可数，前面不能加 a）。',
+    swap:'the views → the scenery'
   },
-  dedicate:{
-    type:'A', pos:'动词短语', term:'dedicate oneself to', ipa:'/ˈdedɪkeɪt/',
-    zh:'献身于；致力于；把（时间、精力）投入到',
-    usage:'dedicate oneself / one\u2019s life / one\u2019s time to sth。to 是介词，后面跟名词或动名词（doing）。被动 be dedicated to 同样常用。名词 dedication 表示「奉献；献身」。',
-    colloc:['dedicate oneself to (doing) sth','dedicate one\u2019s life to sth','be dedicated to doing sth','with great dedication'],
-    ex:'He dedicated his whole life to helping children in poor areas.',
-    exzh:'他把毕生精力都献给了帮助贫困地区的孩子。',
-    warn:'❌ dedicate oneself to do sth → ✅ dedicate oneself to doing sth（to 是介词！）',
-    swap:'spend time on → dedicate oneself to'
+  wander:{
+    type:'A', pos:'v.', term:'wander', ipa:'/ˈwɒndə(r)/',
+    zh:'漫步；闲逛；徘徊',
+    usage:'指没有明确目的地、悠闲地走。常用 wander through / around + 地点；也可指「（思绪）走神」。旅行写作里比 walk around 多一层「享受过程」的意味。',
+    colloc:['wander through / around a place','wander aimlessly','spend the afternoon wandering'],
+    ex:'I spent three days wandering through the Hani villages.',
+    exzh:'我花了三天在哈尼族村寨间漫步。',
+    warn:'和 wonder（想知道）只差一个字母，意思完全不同：❌ I wondered through the town。',
+    swap:'walk around → wander through'
   },
-  appoint:{
-    type:'B', pos:'动词（被动）', term:'be appointed to', ipa:'/əˈpɔɪnt/',
-    zh:'被任命（担任）；被委派',
-    usage:'主动：appoint sb (as) sth / appoint sb to do sth。被动：sb be appointed to do sth / be appointed as + 职位。用于正式介绍人物的职务或任务。',
-    colloc:['be appointed to lead / head / manage...','be appointed as chairman / director','appoint sb to a post'],
-    ex:'In 1969, she was appointed to lead a secret research project.',
-    exzh:'1969 年，她被任命领导一个秘密研究项目。',
-    warn:'职位名称前通常不加 the：be appointed (as) manager。',
-    swap:'was chosen to → was appointed to'
+  peaceful:{
+    type:'A', pos:'adj.', term:'peaceful', ipa:'/ˈpiːsfl/',
+    zh:'宁静的；平静的；和平的',
+    usage:'形容没有喧闹、没有冲突的地方或状态：a peaceful village / atmosphere / evening。名词 peace（和平；安宁），副词 peacefully。描写旅行时比 quiet 更能表达「让人放松」的感受。',
+    colloc:['a peaceful village / atmosphere','a peaceful evening / afternoon','peace and quiet'],
+    ex:'The peaceful atmosphere was exactly what I needed.',
+    exzh:'那种宁静的气氛正是我需要的。',
+    warn:'peaceful 强调「安静得让人放松」；quiet 只强调「声音小」。写旅行感受用 peaceful 更到位。',
+    swap:'very quiet → peaceful'
   },
-  tirelessly:{
-    type:'A', pos:'adv.', term:'tirelessly', ipa:'/ˈtaɪələsli/',
-    zh:'不知疲倦地；孜孜不倦地',
-    usage:'来自 tire（使疲惫）+ -less（无）+ -ly。形容词 tireless 常修饰 efforts / work / dedication：tireless efforts。用来描写一个人长期非常努力，比 work very hard 高一个档次。',
-    colloc:['work tirelessly for years','work tirelessly to do sth','tireless efforts / dedication / work'],
-    ex:'The volunteers worked tirelessly to clean up the beach.',
-    exzh:'志愿者们不知疲倦地清理海滩。',
-    warn:'注意区分：tiring 形容「累人的事情」，tireless 形容「不知疲倦的人」。',
-    swap:'work very hard → work tirelessly'
+  atmosphere:{
+    type:'A', pos:'n.', term:'atmosphere', ipa:'/ˈætməsfɪə(r)/',
+    zh:'气氛；氛围；（地球）大气层',
+    usage:'常搭配形容词说明氛围：a relaxed / peaceful / friendly / lively atmosphere。可数名词，通常与 the / a 连用。写餐厅、城市、学校、节日气氛时是首选词。',
+    colloc:['a relaxed / peaceful / friendly atmosphere','the atmosphere of a place','create a good atmosphere'],
+    ex:'The village has a peaceful atmosphere that I will never forget.',
+    exzh:'这个村子有一种宁静的气氛，我永远不会忘记。',
+    warn:'形容气氛要用 relaxed / peaceful / friendly，不能用 nice / comfortable；也不要和 weather（天气）混用。',
+    swap:'the feeling of the place → the atmosphere'
   },
-  extraordinary:{
-    type:'A', pos:'adj.', term:'extraordinary', ipa:'/ɪkˈstrɔːdnri/',
-    zh:'非凡的；异乎寻常的；特别的',
-    usage:'extra-（超出）+ ordinary（普通）= 超出普通的。可形容人、勇气、天赋、努力、成就。反义词是 ordinary。与 remarkable 意思接近，写作中交替使用可以避免重复。',
-    colloc:['extraordinary courage / talent / determination','an extraordinary achievement','something extraordinary happens'],
-    ex:'It took extraordinary courage to speak out against the plan.',
-    exzh:'公开反对这个计划需要非凡的勇气。',
-    warn:'拼写：extra + ordinary，不是 extrodinary。',
-    swap:'very special → extraordinary'
+  realise:{
+    type:'A', pos:'v.', term:'realise', ipa:'/ˈriːəlaɪz/',
+    zh:'意识到；明白；实现（梦想）',
+    usage:'写作中常用来交代「领悟 / 转变」：make sb realise sth（使某人意识到）。表示「实现」时用 realise a dream / one\u2019s potential。英式拼写 realise，美式 realize，FCE 两种都接受。',
+    colloc:['realise (that) + 完整句子','make sb realise sth','realise a dream / one\u2019s potential'],
+    ex:'Getting away from it all made me realise how noisy my city life had become.',
+    exzh:'彻底逃离日常、放松几天，让我意识到自己的城市生活已经变得多么嘈杂。',
+    warn:'realise 后面必须跟完整的宾语从句：❌ I realised me tired → ✅ I realised (that) I was tired。',
+    swap:'I understood → I realised'
   },
-  persistence:{
-    type:'A', pos:'n.', term:'persistence', ipa:'/pəˈsɪstəns/',
-    zh:'坚持不懈；执着',
-    usage:'动词 persist（坚持），搭配 persist in doing sth；形容词 persistent（坚持不懈的；持续的）；副词 persistently。名词常搭配 show / need great persistence。',
-    colloc:['show great persistence','with persistence','persist in doing sth','a persistent effort'],
-    ex:'Her persistence finally paid off when the company accepted her idea.',
-    exzh:'当公司最终采纳了她的想法时，她的坚持终于得到了回报。',
-    warn:'❌ persist to do sth → ✅ persist in doing sth',
-    swap:'never giving up → persistence'
+  journey:{
+    type:'A', pos:'n.', term:'journey', ipa:'/ˈdʒɜːni/',
+    zh:'旅程；路程（尤指长途）',
+    usage:'指从一个地方到另一个地方的过程，通常较长：a long / tiring journey。搭配 make / go on / set off on a journey。与 trip 的区别：trip 泛指一次出行，journey 强调「路上的过程」。',
+    colloc:['a long / tiring journey','go on / set off on a journey','a two-day journey'],
+    ex:'It is a long journey, but it is well worth it.',
+    exzh:'路途遥远，但这趟旅程非常值得。',
+    warn:'「两天的路程」用 a two-day journey，不用 a journey of two days time；journey 一般不作动词。',
+    swap:'a long trip → a long journey'
   },
-  payoff:{
-    type:'B', pos:'动词短语（不及物）', term:'pay off', ipa:'/ˌpeɪ ˈɒf/',
-    zh:'（努力、风险等）得到回报；奏效',
-    usage:'主语通常是努力、耐心、坚持、冒险等抽象事物，后面不接宾语：All the hard work paid off. 写作中常放在结果句里，用来收束「努力 → 收获」的逻辑。',
-    colloc:['all the hard work paid off','her patience / persistence finally paid off','months of training paid off'],
-    ex:'All those late nights finally paid off \u2014 she passed with an A.',
-    exzh:'那些熬夜的日子终于有了回报——她以 A 的成绩通过了考试。',
-    warn:'别和 pay back（还钱；报复）、pay for（为……付钱）混淆。',
-    swap:'was worth it → paid off'
+  oneofthemost:{
+    type:'B', pos:'最高级句型', term:'one of the most … in …', ipa:'/wʌn əv ðə məʊst/',
+    zh:'……是……中最……的之一',
+    usage:'结构：one of the most + 形容词最高级 + 名词复数 + in / that I have ever + 过去分词。作用是给评价加上「范围」或「阅历」的分量，比 very + 形容词有说服力得多。两条硬性要求：名词必须复数，形容词必须用最高级。',
+    colloc:['one of the most spectacular sights in China','one of the most interesting places I have ever visited','one of the best meals I have ever had'],
+    ex:'It is one of the most spectacular sights in China.',
+    exzh:'这是中国最壮观的景色之一。',
+    warn:'❌ one of the most spectacular sight → ✅ sights（名词必须复数）；后面从句用现在完成时 have ever + 过去分词。',
+    swap:'It is very beautiful. → It is one of the most beautiful places I have ever seen.'
   },
-  recognition:{
-    type:'B', pos:'介词短语', term:'in recognition of', ipa:'/ˌrekəɡˈnɪʃn/',
-    zh:'为表彰……；作为对……的认可',
-    usage:'放在句首或句尾作状语，用来说明颁奖、致谢、纪念的原因，是 because of 的「高级正式版」。同根词：recognise（认可）、be widely recognised as（被公认为）。',
-    colloc:['in recognition of one\u2019s achievements / contribution / services','be widely recognised as...','receive recognition for sth'],
-    ex:'In recognition of her services to medicine, she received a national medal.',
-    exzh:'为表彰她对医学的贡献，她获得了一枚国家级奖章。',
-    warn:'固定搭配是 in recognition of，不要写成 in recognition for。',
-    swap:'because of → in recognition of'
+  themoment:{
+    type:'B', pos:'连词性短语', term:'the moment (that) …', ipa:'/ðə ˈməʊmənt/',
+    zh:'一……就……；在……的那一刻',
+    usage:'结构：The moment + 从句, 主句。相当于 as soon as，但更有画面感，特别适合叙述类作文的开头。主句用过去时；若指将来的事，从句用一般现在时代替将来时。',
+    colloc:['The moment I arrived, ...','The moment she saw it, she burst into tears.','The moment he opened the door, ...'],
+    ex:'The moment I reached the top of the mountain, the scenery took my breath away.',
+    exzh:'我一登上山顶，那里的风景就让我惊叹不已。',
+    warn:'从句用一般时，不能用 will：❌ The moment I will arrive；也不要画蛇添足写成 The moment when I arrived。',
+    swap:'As soon as I arrived → The moment I arrived'
   },
-  contribution:{
-    type:'A', pos:'n.', term:'contribution', ipa:'/ˌkɒntrɪˈbjuːʃn/',
-    zh:'贡献；捐助；投稿',
-    usage:'动词 contribute（贡献；促成），搭配 contribute to sth（有助于 / 导致）。名词常用：make a contribution to sth / an outstanding contribution to sth。介词是 to，不是 for。',
-    colloc:['make a valuable contribution to sth','an outstanding / major contribution to','contribute to sth'],
-    ex:'She made a valuable contribution to the project.',
-    exzh:'她为这个项目做出了宝贵的贡献。',
-    warn:'❌ contribution for → ✅ contribution to',
-    swap:'help → make a contribution to'
+  breath:{
+    type:'B', pos:'固定短语', term:"take sb's breath away", ipa:'/teɪk sʌmˌbɒdiz breθ əˈweɪ/',
+    zh:'令某人惊叹不已；美得让人说不出话',
+    usage:'主语必须是「令人震撼的事物」—— 风景、演出、美景。描写类作文里用来替代 the scenery was beautiful，直接给出反应而不是形容词。形容词形式 breathtaking 更常用：breathtaking scenery。',
+    colloc:['The view took my breath away.','The scenery will take your breath away.','breathtaking scenery (adj.)'],
+    ex:'The moment I reached the top, the scenery took my breath away.',
+    exzh:'我一登上山顶，那里的风景就让我惊叹不已。',
+    warn:'breath 是名词，breathe 是动词：❌ took my breathe away。另外主语不能是「我」。',
+    swap:'The scenery was very beautiful. → The scenery took my breath away.'
   },
-  award:{
-    type:'A', pos:'动词（被动）', term:'be awarded', ipa:'/əˈwɔːd/',
-    zh:'被授予；被颁发',
-    usage:'主动：award sb sth（授予某人某物）。被动有两种：sb be awarded sth / sth be awarded to sb。名词 award 也表示「奖项」，win an award for sth。',
-    colloc:['be awarded the Nobel Prize / a medal','award sb sth','win an award for sth'],
-    ex:'He was awarded the prize for his research.',
-    exzh:'他因研究成果而被授予该奖项。',
-    warn:'❌ He awarded the prize（漏掉 be，意思就变成「他给别人颁奖」了）。',
-    swap:'receive / get → be awarded'
+  getaway:{
+    type:'B', pos:'固定短语', term:'get away from it all', ipa:'/ɡet əˈweɪ frəm ɪt ɔːl/',
+    zh:'（从繁忙的生活中）彻底放松；逃离一切',
+    usage:'it all 指「日常的繁忙、压力、烦心事」。用来谈假期和休息，比自己说 have a rest 地道得多。名词形式 a getaway 表示「短假」或「逃走」。',
+    colloc:['get away from it all for a few days','need to get away from it all','take a weekend getaway'],
+    ex:'Getting away from it all for a few days made me realise how noisy my city life had become.',
+    exzh:'彻底逃离日常、放松几天，让我意识到自己的城市生活已经变得多么嘈杂。',
+    warn:'固定用 it all，不能改成 everything / them；这个动名词短语作主语时谓语用单数（made，不是 make）。',
+    swap:'have a rest → get away from it all'
   },
-  inspiration:{
-    type:'B', pos:'名词短语', term:'a source of inspiration', ipa:'/ˌɪnspəˈreɪʃn/',
-    zh:'灵感的源泉；鼓舞的来源',
-    usage:'固定搭配 a source of inspiration to / for sb。动词 inspire（激励；启发），inspire sb to do sth。非常适合做人物类作文的结尾句，替代 "he is a good example for us"。',
-    colloc:['a source of inspiration to young people','inspire sb to do sth','be inspired by sb / sth'],
-    ex:'Her story has become a source of inspiration for millions of young people.',
-    exzh:'她的故事已经成为数百万年轻人的灵感源泉。',
-    warn:'介词可用 to 或 for；不要写成 a source of inspire。',
-    swap:'a good example for us → a source of inspiration to us'
+  wellworth:{
+    type:'B', pos:'形容词短语', term:'be well worth it', ipa:'/biː wel wɜːθ ɪt/',
+    zh:'非常值得',
+    usage:'两种用法：① be worth + 动名词（It is worth visiting）；② be well worth it，用 it 指代前面说的经历或付出。修饰词只能用 well：be well worth the effort / the money。',
+    colloc:['be well worth it','be worth visiting / trying','be well worth the effort'],
+    ex:'The road is long, but the journey is well worth it.',
+    exzh:'路途遥远，但这趟旅程非常值得。',
+    warn:'❌ It is worth to visit → ✅ It is worth visiting（worth 后接动名词，不接不定式）；❌ very worth → ✅ well worth。',
+    swap:'It is a good place. → It is well worth visiting.'
   }
 };
 
-/* ---------- 词汇精讲表 ---------- */
-const ORDER = ['remarkable','dedicate','tirelessly','extraordinary','persistence','contribution','award','earlyage','appoint','payoff','recognition','inspiration'];
+const ORDER = ['remote','scenery','wander','peaceful','atmosphere','realise','journey','oneofthemost','themoment','breath','getaway','wellworth'];
 const SHORT = {
-  remarkable:'卓越的；非凡的', dedicate:'献身于；致力于', tirelessly:'不知疲倦地',
-  extraordinary:'非凡的；异乎寻常的', persistence:'坚持不懈', contribution:'贡献',
-  award:'被授予', earlyage:'自幼；从小', appoint:'被任命', payoff:'得到回报；奏效',
-  recognition:'为表彰……', inspiration:'灵感源泉'
+  remote:'偏远的；遥远的', scenery:'风景（不可数）', wander:'漫步；闲逛',
+  peaceful:'宁静的；平静的', atmosphere:'气氛；氛围', realise:'意识到；实现', journey:'旅程；路程',
+  oneofthemost:'最……的之一', themoment:'一……就……', breath:'令人惊叹不已',
+  getaway:'彻底放松；逃离一切', wellworth:'非常值得'
 };
 const CL = {
-  remarkable:'a remarkable talent for / achievement',
-  dedicate:'dedicate oneself to (doing) sth',
-  tirelessly:'work tirelessly to do sth',
-  extraordinary:'extraordinary courage / talent',
-  persistence:'show great persistence',
-  contribution:'make a contribution to sth',
-  award:'be awarded the Nobel Prize',
-  earlyage:'From an early age, she showed...',
-  appoint:'be appointed to lead / head...',
-  payoff:'all the hard work paid off',
-  recognition:'in recognition of one\u2019s achievements',
-  inspiration:'a source of inspiration to sb'
+  remote:'a remote county / village',
+  scenery:'spectacular scenery（不可数）',
+  wander:'wander through / around a place',
+  peaceful:'a peaceful atmosphere',
+  atmosphere:'a relaxed / peaceful atmosphere',
+  realise:'make sb realise sth',
+  journey:'a long / tiring journey',
+  oneofthemost:'one of the most ... in China',
+  themoment:'The moment I arrived, ...',
+  breath:'The view took my breath away.',
+  getaway:'get away from it all for a few days',
+  wellworth:'be well worth it / worth visiting'
 };
+
+/* 自动统计短文词数（排除单独的破折号等标点） */
+(function countWords(){
+  const t = document.getElementById('en').textContent.replace(/\s+/g,' ').trim();
+  const n = t ? t.split(' ').filter(w=>/[A-Za-z0-9]/.test(w)).length : 0;
+  document.getElementById('wc').textContent = n;
+  document.getElementById('wc2').textContent = n;
+})();
+
 (function buildTable(){
   const tb = document.getElementById('vocabBody');
   tb.innerHTML = ORDER.map(k=>{
@@ -517,14 +680,12 @@ const CL = {
       '<td class="w">'+d.term+badge+'<small>'+d.ipa+'</small></td>'+
       '<td>'+d.pos+'<br>'+SHORT[k]+'</td>'+
       '<td><code>'+CL[k]+'</code></td>'+
-      '<td>'+d.ex.replace(/<b>/g,'').replace(/<\/b>/g,'')+'</td>'+
+      '<td>'+d.ex+'</td>'+
     '</tr>';
   }).join('');
 })();
 
-/* ---------- 详情卡 ---------- */
 const detail = document.getElementById('detail');
-function esc(s){return s;}
 function show(id){
   const d = V[id];
   if(!d) return;
@@ -532,7 +693,7 @@ function show(id){
   const cls = isA ? '' : ' t-amber';
   detail.innerHTML =
     '<div class="dtag '+(isA?'t-A':'t-B')+'">'+(isA?'FCE 核心词':'高级搭配 / 句型')+'</div>'+
-    '<h3>'+esc(d.term)+' <span class="pos">'+d.pos+'</span></h3>'+
+    '<h3>'+d.term+' <span class="pos">'+d.pos+'</span></h3>'+
     '<div class="ipa">'+d.ipa+'</div>'+
     '<div class="zh-def">'+d.zh+'</div>'+
     '<div class="blk'+cls+'"><h4>用法</h4><p>'+d.usage+'</p></div>'+
@@ -554,7 +715,6 @@ document.addEventListener('click', e=>{
   if(tr){ show(tr.dataset.v); }
 });
 
-/* ---------- 开关 ---------- */
 const btnHl = document.getElementById('btnHl');
 const btnCn = document.getElementById('btnCn');
 const btnAll = document.getElementById('btnAll');
@@ -595,8 +755,51 @@ btnAll.addEventListener('click',()=>{
   }
 });
 
-/* 默认展示第一个词 */
-show('remarkable');
+
+/* ==================== 打印版附录：一次性铺开全部词条 ==================== */
+(function buildPrintAppendix(){
+  var host = document.getElementById('printAppendixBody');
+  if(!host || typeof V === 'undefined' || typeof ORDER === 'undefined') return;
+  var esc = function(s){ return String(s); };
+  host.innerHTML = ORDER.map(function(k){
+    var d = V[k];
+    if(!d) return '';
+    var isA = d.type === 'A';
+    return '<div class="pe">'
+      + '<div class="pe-head">'
+        + '<span class="pe-tag ' + (isA ? 't-A' : 't-B') + '">' + (isA ? '核心词' : '高级搭配') + '</span>'
+        + '<b>' + esc(d.term) + '</b>'
+        + '<i>' + esc(d.pos) + '</i>'
+        + '<span class="pe-ipa">' + esc(d.ipa) + '</span>'
+        + '<span class="pe-zh">' + esc(d.zh) + '</span>'
+      + '</div>'
+      + '<div class="pe-body">'
+        + '<div><span class="pe-lb">常用搭配</span><ul>'
+          + (d.colloc || []).map(function(c){ return '<li>' + esc(c) + '</li>'; }).join('')
+        + '</ul></div>'
+        + '<div><span class="pe-lb">例句 / 易错 / 升级</span>'
+          + '<p class="pe-ex">' + esc(d.ex) + '</p>'
+          + '<p class="pe-exzh">' + esc(d.exzh) + '</p>'
+          + '<p class="pe-warn">易错：' + esc(d.warn) + '</p>'
+          + '<p class="pe-swap">升级：' + esc(d.swap) + '</p>'
+        + '</div>'
+      + '</div>'
+    + '</div>';
+  }).join('');
+})();
+
+/* 工具栏「打印 / 导出 PDF」按钮 */
+(function bindPrintButton(){
+  var b = document.getElementById('btnPrint');
+  if(!b) return;
+  b.addEventListener('click', function(){
+    var old = b.textContent;
+    b.textContent = '请在弹窗里选「另存为 PDF」…';
+    setTimeout(function(){ window.print(); b.textContent = old; }, 80);
+  });
+})();
+
+show('remote');
 </script>
 </body>
 </html>

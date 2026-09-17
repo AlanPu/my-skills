@@ -1,6 +1,6 @@
 ---
 name: fce-vocab-context
-description: 生成「FCE 词汇实战示范文」交互学习页——把 FCE/B2 First 高频词塞进一篇 90–120 词的短文里，配中英双语、逐词精讲、易错点、写作迁移模板。覆盖 9 种体裁（人物传记 / 地点旅行 / 经历叙述 / 观点议论 / 建议信 / 评价评论 / 报告 / 活动节日 / 科技媒体），体裁与词表随机轮换、互不重复。当用户说「给我找一篇包含 FCE 单词的小短文」「把 FCE 词汇放进例子里」「我记不住 FCE 单词/写作文用不上」「再来一篇/随机换个主题/换个体裁」时使用。
+description: 生成「FCE 词汇实战示范文」交互学习页，并可导出适合打印的 PDF——把 FCE/B2 First 高频词塞进一篇 90–120 词的短文里，配中英双语、逐词精讲、易错点、写作迁移模板。覆盖 9 种体裁（人物传记 / 地点旅行 / 经历叙述 / 观点议论 / 建议信 / 评价评论 / 报告 / 活动节日 / 科技媒体），体裁与词表随机轮换、互不重复。打印版自动切浅色 A4 版式、收起交互面板、展开全部 12 个词条详解，并用实线/虚线区分两类词以保证黑白复印可辨。当用户说「给我找一篇包含 FCE 单词的小短文」「把 FCE 词汇放进例子里」「我记不住 FCE 单词/写作文用不上」「再来一篇/随机换个主题/换个体裁」「打印出来/导成 PDF/要纸质版」时使用。
 agent_created: true
 ---
 
@@ -16,7 +16,8 @@ fce-vocab-context/
 │   └── state.json              ← 交付台账：已用体裁 + 已用词条（抽签与去重的依据）
 └── assets/
     ├── template.html           ← 页面模板（复制后替换内容，不要重新设计版式）
-    └── pick.py                 ← 随机抽体裁 + 打印词表黑名单
+    ├── pick.py                 ← 随机抽体裁 + 打印词表黑名单
+    └── export_pdf.py           ← 把学习页导出成适合打印的 PDF
 ```
 
 ## 解决的问题
@@ -42,6 +43,39 @@ fce-vocab-context/
 
 右栏：详情卡（sticky）+ 图例 + 「怎么用这一页」。**产出 3 篇起加一张「路线图」卡**，
 列出已发篇目（体裁 / 人物 / 词数）+ 已覆盖的题型 + 下一步建议，让用户看到累积价值。
+
+## 打印 / 导出 PDF（已内建在模板里）
+
+**这一块不要在新页面里重做，`assets/template.html` 已经带好了。** 复制模板即自动拥有：
+
+- `@page{ size:A4; margin:13mm 12mm 15mm }` —— 输出固定 A4。
+- 一整套 `@media print`：切浅色主题（所有 CSS 变量在 print 下被重定义）、
+  隐藏 `.toolbar` 与 `aside.col-right`、表格转白底深字、`thead{display:table-header-group}` 让跨页表头重复、
+  对 `.upg-row` / `#printAppendix .pe` / `tr` 做 `break-inside:avoid` 防止条目被拦腰截断。
+- **`#printAppendix`（class `print-only`）** —— 屏幕上 `display:none`，打印时展开。
+  由末尾的 `buildPrintAppendix()` 从 `V` / `ORDER` 生成**全部 12 个词条**的详解。
+  这是关键设计：屏幕上详情卡一次只显示 1 个词（要点才出），纸面上没有点击，必须一次铺开。
+- **实线 / 虚线双编码**：打印时核心词用 `border-bottom:2px solid`，高级搭配用 `2px dashed`，
+  配合 `print-legend` 图例。目的是**黑白复印后两类词仍然分得开** —— 只靠颜色是不行的。
+- 工具栏按钮 `#btnPrint` → `window.print()`。用户想手动打印时走这条路，效果与脚本一致。
+
+导出命令（不依赖浏览器界面，可批量、可重复）：
+
+```bash
+python3 assets/export_pdf.py <页面.html>          # 单文件 → 同目录同名 .pdf
+python3 assets/export_pdf.py <目录>               # 批量该目录下所有 *.html
+python3 assets/export_pdf.py --check <目录>       # 只体检哪些页面缺打印支持
+```
+
+⚠️ **两个必须知道的坑（脚本已处理，但出问题时要会判断）**：
+1. 浏览器已在运行时，headless 调用会被转交给现有实例、**静默不产出且退出码为 0**。
+   脚本用独立的 `--user-data-dir` 临时 profile 规避。
+2. 浏览器会往沙箱外写（Crashpad 转储、macOS 登录钥匙串），受限沙箱里会被拦。
+   脚本已加 `--disable-breakpad` / `--crash-dumps-dir` / `--use-mock-keychain` 等开关压到最低，
+   **但仍可能需要非沙箱运行** —— 这是浏览器本身的限制，不是脚本能绕过的。
+   失败时不要反复重试，直接告知用户需要用非沙箱方式执行。
+3. 导完必须校验：文件头应为 `%PDF-`、字节数非 0、页数合理（一页学习页正常 5–8 页）。
+   脚本内置了这三项校验并会打印结果。
 
 ### 第 ③ ④ 区块随体裁变 —— 查体裁库
 
@@ -125,6 +159,9 @@ key:{
    （n / title / file / genre / subject / words / coreWords / phrases / terms），
    并在页面的「路线图」卡里补一行。**漏了这步，下次抽签就会重复体裁和词表。**
 8. `present_files` 呈现，并在正文里给出核心信息（体裁、词数、词条数、最有价值的那几条改写）。
+9. **（可选）导出打印版 PDF**：用户提「打印」「PDF」「纸质版」时，跑
+   `python3 assets/export_pdf.py <新页面.html>`，把生成的 `.pdf` 一并 `present_files`。
+   导完自检页数（5–8 页为正常），并把 PDF 路径告诉用户。
 
 ## 设计约束
 
