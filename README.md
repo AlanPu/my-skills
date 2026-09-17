@@ -26,6 +26,9 @@ Real-time search engine supporting web search, vertical domain search (23 domain
 ### youtube-downloader
 Download YouTube videos with customizable quality and format options. Use this skill when the user asks to download, save, or grab YouTube videos.
 
+### fce-vocab-context
+生成「FCE 词汇实战示范文」交互学习页——把 FCE / B2 First 高频词塞进一篇 90–120 词的短文，配中英双语、12 个词条精讲（音标 / 搭配 / 例句 / 易错点 / 升级替换）、写作迁移模板与高频易错点。覆盖 9 种体裁（人物传记 / 地点旅行 / 经历叙述 / 观点议论 / 建议信 / 评价评论 / 报告 / 活动节日 / 科技媒体），体裁与词表通过 `assets/pick.py` 随机轮换、互不重复。当用户抱怨「背了 FCE 单词记不住、写作文不会用」，或要求「找一篇包含 FCE 单词的例文」「再来一篇 / 换个主题」时调用。
+
 ## 使用方法
 1. 在 Trae IDE 中，当遇到对应场景时，系统会自动调用相应的技能
 2. 也可以手动指定使用某个技能来完成特定任务

@@ -1,0 +1,39 @@
+{
+  "_说明": "本技能的交付台账。每生成一篇就追加一条 delivered 记录，并同步更新页面里的「路线图」卡。pick.py 会读这个文件来排除已用体裁、打印词表黑名单。",
+  "updated": "2026-09-17",
+  "delivered": [
+    {
+      "n": 1,
+      "title": "The Quiet Scientist",
+      "file": "outputs/fce-word-in-action.html",
+      "genre": "biography",
+      "subject": "屠呦呦 / 科学",
+      "words": 99,
+      "coreWords": ["remarkable", "dedicate oneself to", "tirelessly", "extraordinary", "persistence", "contribution", "be awarded"],
+      "phrases": ["from an early age", "be appointed to", "pay off", "in recognition of", "a source of inspiration"],
+      "terms": ["from an early age", "remarkable", "dedicate oneself to", "be appointed to", "tirelessly", "extraordinary", "persistence", "pay off", "in recognition of", "contribution", "be awarded", "a source of inspiration"]
+    },
+    {
+      "n": 2,
+      "title": "A Teacher Who Changed Their Lives",
+      "file": "outputs/fce-word-in-action-2.html",
+      "genre": "biography",
+      "subject": "张桂梅 / 教育",
+      "words": 107,
+      "coreWords": ["determined", "afford", "opportunity", "struggle", "overcome", "commitment", "deserve"],
+      "phrases": ["at the age of", "against all odds", "in the face of", "make a difference to", "a symbol of"],
+      "terms": ["at the age of", "afford", "opportunity", "determined", "struggle", "against all odds", "in the face of", "overcome", "commitment", "make a difference to", "a symbol of", "deserve"]
+    },
+    {
+      "n": 3,
+      "title": "A Place Worth the Journey",
+      "file": "outputs/fce-word-in-action-3.html",
+      "genre": "place",
+      "subject": "元阳梯田 / 旅行描写",
+      "words": 102,
+      "coreWords": ["remote", "scenery", "wander", "peaceful", "atmosphere", "realise", "journey"],
+      "phrases": ["one of the most … in …", "the moment (that) …", "take sb's breath away", "get away from it all", "be well worth it"],
+      "terms": ["remote", "scenery", "wander", "peaceful", "atmosphere", "realise", "journey", "one of the most … in …", "the moment (that) …", "take sb's breath away", "get away from it all", "be well worth it"]
+    }
+  ]
+}

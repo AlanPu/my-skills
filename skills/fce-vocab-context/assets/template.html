@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FCE 词汇实战 · The Quiet Scientist</title>
+<style>
+  :root{
+    --bg:#0d1117;
+    --panel:#161b22;
+    --panel2:#1c2230;
+    --border:#252d3a;
+    --text:#e6edf3;
+    --muted:#8b949e;
+    --dim:#6b7280;
+    --a:#79c0ff;          /* FCE 核心词 —— 蓝 */
+    --a-bg:rgba(56,139,253,.15);
+    --a-bd:rgba(121,192,255,.55);
+    --b:#ffd479;          /* 高级搭配/句型 —— 琥珀 */
+    --b-bg:rgba(210,153,34,.15);
+    --b-bd:rgba(255,212,121,.55);
+    --good:#56d364;
+    --bad:#ff7b72;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;
+    font-size:15px;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:36px 24px 72px;}
+
+  /* ---------- header ---------- */
+  header.head{margin-bottom:26px;}
+  .kicker{
+    display:inline-block;font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--a);border:1px solid rgba(121,192,255,.35);border-radius:999px;
+    padding:4px 12px;margin-bottom:14px;background:rgba(56,139,253,.08);
+  }
+  h1{font-size:29px;line-height:1.3;margin:0 0 8px;font-weight:650;letter-spacing:-.01em;}
+  h1 em{font-style:normal;color:var(--a);}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 18px;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+  .chip{
+    font-size:12.5px;color:var(--muted);background:var(--panel);
+    border:1px solid var(--border);border-radius:999px;padding:4px 12px;
+  }
+  .chip b{color:var(--text);font-weight:600;}
+  .chip.blue{border-color:rgba(121,192,255,.3);}
+  .chip.gold{border-color:rgba(255,212,121,.3);}
+
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0 0;}
+  .tgl{
+    cursor:pointer;user-select:none;font-size:13px;color:var(--muted);
+    background:var(--panel);border:1px solid var(--border);border-radius:9px;
+    padding:8px 14px;transition:.18s;font-family:inherit;
+  }
+  .tgl:hover{color:var(--text);border-color:#3a4553;}
+  .tgl.on{color:var(--bg);background:var(--a);border-color:var(--a);font-weight:600;}
+
+  /* ---------- layout ---------- */
+  .grid{display:grid;grid-template-columns:minmax(0,1.62fr) minmax(0,1fr);gap:22px;align-items:start;}
+  @media (max-width:920px){.grid{grid-template-columns:1fr;}}
+
+  .card{
+    background:var(--panel);border:1px solid var(--border);border-radius:14px;
+    padding:22px 24px;margin-bottom:20px;
+  }
+  .card h2{
+    font-size:15px;margin:0 0 14px;font-weight:650;letter-spacing:.02em;
+    display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  }
+  .card h2 .note{font-size:12px;color:var(--dim);font-weight:400;letter-spacing:0;}
+
+  /* ---------- passage ---------- */
+  .passage{font-size:17.5px;line-height:2.05;margin:0;font-family:Georgia,"Times New Roman","Songti SC",serif;}
+  .passage.cn{font-family:inherit;font-size:15.5px;line-height:2.1;color:#c9d5e1;}
+
+  .hl{
+    cursor:pointer;border-radius:4px;padding:1px 3px;margin:0 -1px;
+    transition:background .15s,border-color .15s;
+    border-bottom:1.6px solid transparent;
+  }
+  .hl-a{color:var(--a);background:var(--a-bg);border-bottom-color:var(--a-bd);}
+  .hl-b{color:var(--b);background:var(--b-bg);border-bottom-color:var(--b-bd);}
+  .hl:hover{background:rgba(255,255,255,.13);}
+  .hl.active{
+    background:rgba(255,255,255,.2);
+    box-shadow:0 0 0 1px rgba(255,255,255,.35);
+  }
+  body.no-hl .hl{background:transparent;color:inherit;border-bottom-color:transparent;cursor:default;}
+  body.no-hl .hl.active{box-shadow:none;background:transparent;}
+
+  /* ---------- right column ---------- */
+  .sticky{position:sticky;top:24px;}
+  @media (max-width:920px){.sticky{position:static;}}
+  .detail .empty{color:var(--dim);font-size:13.5px;line-height:1.9;}
+  .dtag{
+    display:inline-block;font-size:11.5px;font-weight:600;letter-spacing:.06em;
+    border-radius:6px;padding:2px 9px;margin-bottom:10px;
+  }
+  .t-A{color:var(--a);background:var(--a-bg);border:1px solid rgba(121,192,255,.3);}
+  .t-B{color:var(--b);background:var(--b-bg);border:1px solid rgba(255,212,121,.3);}
+  .detail h3{font-size:21px;margin:0 0 2px;font-weight:650;letter-spacing:-.01em;}
+  .detail h3 .pos{font-size:12.5px;color:var(--dim);font-style:italic;font-weight:400;}
+  .ipa{color:var(--muted);font-size:13.5px;margin-bottom:8px;font-family:"SF Mono",Menlo,monospace;}
+  .zh-def{font-size:14.5px;color:#d5e2ee;margin-bottom:16px;padding-bottom:14px;border-bottom:1px dashed var(--border);}
+  .blk{margin-bottom:14px;}
+  .blk h4{
+    font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);
+    margin:0 0 6px;font-weight:600;
+  }
+  .blk p{margin:0;font-size:13.8px;line-height:1.85;color:#c2cedb;}
+  .blk ul{margin:0;padding-left:0;list-style:none;}
+  .blk li{
+    font-size:13.5px;color:#c2cedb;padding:3px 0 3px 14px;position:relative;
+    font-family:"SF Mono",Menlo,monospace;
+  }
+  .blk li::before{content:"›";position:absolute;left:2px;color:var(--a);font-weight:700;}
+  .blk.t-amber li::before{color:var(--b);}
+  .ex{
+    font-family:Georgia,"Times New Roman",serif;font-size:14.5px;color:#e6edf3;
+    background:var(--panel2);border-left:3px solid var(--a);border-radius:0 8px 8px 0;
+    padding:9px 13px;line-height:1.75;
+  }
+  .ex.amber{border-left-color:var(--b);}
+  .exzh{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.75;}
+  .warn p{color:#ffc9c4;font-size:13.2px;}
+  .warn h4{color:var(--bad);}
+  .swap p{
+    font-size:13.2px;color:#b7f0c0;background:rgba(86,211,100,.08);
+    border:1px solid rgba(86,211,100,.22);border-radius:8px;padding:7px 11px;
+    font-family:"SF Mono",Menlo,monospace;
+  }
+
+  /* ---------- legend ---------- */
+  .legend ul{list-style:none;margin:0;padding:0;}
+  .legend li{display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--muted);padding:5px 0;line-height:1.65;}
+  .dot{width:11px;height:11px;border-radius:3px;flex:0 0 auto;margin-top:6px;}
+  .dot-a{background:var(--a);}
+  .dot-b{background:var(--b);}
+  .dot-c{background:var(--dim);}
+
+  /* ---------- tables ---------- */
+  .tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:760px;}
+  th{
+    text-align:left;font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--dim);font-weight:600;padding:11px 14px;
+    background:var(--panel2);border-bottom:1px solid var(--border);white-space:nowrap;
+  }
+  td{padding:11px 14px;border-bottom:1px solid rgba(37,45,58,.7);vertical-align:top;line-height:1.7;color:#c2cedb;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr{cursor:pointer;transition:background .14s;}
+  tbody tr:hover{background:rgba(255,255,255,.035);}
+  tbody tr.active{background:rgba(121,192,255,.09);}
+  td.w{white-space:nowrap;font-weight:600;color:var(--text);}
+  td.w small{display:block;font-weight:400;color:var(--dim);font-size:11.5px;font-family:"SF Mono",Menlo,monospace;letter-spacing:0;}
+  .badge{display:inline-block;font-size:10.5px;padding:1px 6px;border-radius:4px;margin-left:6px;vertical-align:1px;font-weight:600;}
+  .badge.a{color:var(--a);background:var(--a-bg);}
+  .badge.b{color:var(--b);background:var(--b-bg);}
+  code{
+    font-family:"SF Mono",Menlo,monospace;font-size:12.6px;
+    background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:1px 6px;color:#d5e2ee;
+  }
+  td .ok{color:var(--good);}
+  td .no{color:var(--bad);}
+
+  /* ---------- upgrade / template ---------- */
+  .upg{display:grid;grid-template-columns:1fr;gap:0;}
+  .upg-row{padding:13px 0;border-bottom:1px dashed var(--border);}
+  .upg-row:last-child{border-bottom:none;}
+  .upg-row .from{font-size:13.6px;color:var(--muted);font-family:Georgia,serif;line-height:1.7;}
+  .upg-row .from .lbl,.upg-row .to .lbl{
+    font-family:inherit;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    border-radius:4px;padding:1px 7px;margin-right:8px;font-weight:600;
+  }
+  .upg-row .from .lbl{color:var(--dim);background:rgba(139,148,158,.13);}
+  .upg-row .to{font-size:14.4px;color:#e6edf3;font-family:Georgia,serif;line-height:1.75;margin-top:5px;}
+  .upg-row .to .lbl{color:var(--bg);background:var(--good);}
+  .upg-row .to em{font-style:normal;color:var(--good);font-weight:600;}
+  .upg-row .why{font-size:12.6px;color:var(--dim);margin-top:6px;line-height:1.7;}
+
+  .tpl{counter-reset:step;list-style:none;margin:0;padding:0;}
+  .tpl li{
+    counter-increment:step;position:relative;padding:9px 0 9px 42px;
+    font-size:14px;line-height:1.8;color:#c9d5e1;border-bottom:1px dashed rgba(37,45,58,.8);
+  }
+  .tpl li:last-child{border-bottom:none;}
+  .tpl li::before{
+    content:counter(step);position:absolute;left:0;top:9px;
+    width:24px;height:24px;border-radius:7px;background:var(--panel2);
+    border:1px solid var(--border);color:var(--a);font-size:12px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .tpl li b{color:var(--a);font-weight:600;}
+  .tpl li i{font-style:normal;color:var(--b);}
+  .tpl li span.zh{color:var(--dim);font-size:12.8px;display:block;}
+
+  footer{margin-top:30px;color:var(--dim);font-size:12.5px;line-height:1.9;border-top:1px solid var(--border);padding-top:18px;}
+
+  @media print{
+    body{background:#fff;color:#111;}
+    .card{background:#fff;border-color:#ddd;break-inside:avoid;}
+    .toolbar,.sticky-hint{display:none;}
+    .passage{color:#000;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="head">
+    <div class="kicker">FCE · B2 First · Vocabulary in Context</div>
+    <h1>The Quiet Scientist —— <em>12 个 FCE 高频词条，一篇短文串起来</em></h1>
+    <p class="sub">仿你老师范文的「人物传记」文体，把 FCE 核心词放进真实句子里。点击文中任何高亮词，右侧立刻显示音标、释义、搭配、例句和易错点。</p>
+    <div class="chips">
+      <span class="chip">全文 <b>99</b> words</span>
+      <span class="chip blue">FCE 核心词 <b>7</b> 个</span>
+      <span class="chip gold">高级搭配/句型 <b>5</b> 个</span>
+      <span class="chip">主题：屠呦呦 · 人物介绍</span>
+    </div>
+    <div class="toolbar">
+      <button class="tgl on" id="btnHl">高亮：开</button>
+      <button class="tgl on" id="btnCn">中文译文：显示</button>
+      <button class="tgl" id="btnAll">展开全部讲解</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <!-- ================= 左栏 ================= -->
+    <div class="col-left">
+
+      <div class="card">
+        <h2>① 英文原文 <span class="note">点击高亮词查看讲解 · 蓝色 = FCE 核心词 · 黄色 = 高级搭配</span></h2>
+        <p class="passage" id="en">Tu Youyou was born in Ningbo in 1930. <span class="hl hl-b" data-v="earlyage">From an early age</span>, she showed <span class="hl hl-a" data-v="remarkable">remarkable</span> talent for science. After graduating from university, she <span class="hl hl-a" data-v="dedicate">dedicated herself to</span> the study of traditional Chinese medicine. In 1969, she <span class="hl hl-b" data-v="appoint">was appointed to</span> lead a secret research project, and she <span class="hl hl-a" data-v="tirelessly">worked tirelessly</span> for years, testing hundreds of ancient remedies. Her <span class="hl hl-a" data-v="extraordinary">extraordinary</span> <span class="hl hl-a" data-v="persistence">persistence</span> finally <span class="hl hl-b" data-v="payoff">paid off</span>: she discovered artemisinin, a drug that has saved millions of lives. <span class="hl hl-b" data-v="recognition">In recognition of</span> her <span class="hl hl-a" data-v="contribution">outstanding contribution</span>, she <span class="hl hl-a" data-v="award">was awarded</span> the Nobel Prize in 2015. Today she remains <span class="hl hl-b" data-v="inspiration">a source of inspiration to</span> young scientists all over the world.</p>
+      </div>
+
+      <div class="card" id="cardCn">
+        <h2>② 中文译文 <span class="note">画线处与英文高亮一一对应</span></h2>
+        <p class="passage cn" id="cn">屠呦呦 1930 年出生于宁波。<span class="hl hl-b" data-v="earlyage">从小</span>，她就展现出<span class="hl hl-a" data-v="remarkable">非凡的</span>科学天赋。大学毕业后，她<span class="hl hl-a" data-v="dedicate">投身于</span>中医药研究。1969 年，她<span class="hl hl-b" data-v="appoint">被任命</span>领导一个秘密研究项目，多年来她<span class="hl hl-a" data-v="tirelessly">不知疲倦地工作</span>，测试了数百种古代药方。她<span class="hl hl-a" data-v="extraordinary">非凡的</span><span class="hl hl-a" data-v="persistence">坚持</span>终于<span class="hl hl-b" data-v="payoff">得到了回报</span>：她发现了青蒿素——一种已经拯救了数百万人生命的药物。<span class="hl hl-b" data-v="recognition">为表彰</span>她<span class="hl hl-a" data-v="contribution">杰出的贡献</span>，2015 年她<span class="hl hl-a" data-v="award">被授予</span>诺贝尔奖。如今，她仍然是全世界年轻科学家们的<span class="hl hl-b" data-v="inspiration">灵感源泉</span>。</p>
+      </div>
+
+      <div class="card">
+        <h2>③ 你的句子 → 升级版 <span class="note">对比你自己的作文，看差距在哪一个词上</span></h2>
+        <div class="upg">
+          <div class="upg-row">
+            <div class="from"><span class="lbl">你写的</span>He was a great Chinese scientist. / He spent many years researching the nuclear submarine.</div>
+            <div class="to"><span class="lbl">升级</span>He was a <em>remarkable</em> Chinese scientist who <em>dedicated</em> many years <em>to researching</em> the nuclear submarine.</div>
+            <div class="why">① great → remarkable（正式、更高级）② spend time doing → dedicate time <b>to</b> doing（to 是介词，后接动名词）③ 用定语从句把两个短句合并，句子立刻有层次。</div>
+          </div>
+          <div class="upg-row">
+            <div class="from"><span class="lbl">你写的</span>…he still work very hard.</div>
+            <div class="to"><span class="lbl">升级</span>…he <em>worked tirelessly</em> for decades.</div>
+            <div class="why">语法硬伤：he + 过去时，必须是 <code>worked</code>；同时 work very hard 太平淡，换成 work tirelessly 立刻上一个档次。</div>
+          </div>
+          <div class="upg-row">
+            <div class="from"><span class="lbl">你写的</span>Because of his huge devotion to the research, people call him "The father of …".</div>
+            <div class="to"><span class="lbl">升级</span><em>Thanks to</em> his <em>extraordinary dedication</em>, he <em>is widely regarded as</em> "The Father of …".</div>
+            <div class="why">because of → thanks to（含"多亏了"的庆幸语气）；people call him 太口语，改被动 be widely regarded as 更客观正式；huge → extraordinary。</div>
+          </div>
+          <div class="upg-row">
+            <div class="from"><span class="lbl">你写的</span>He also received the Medal of the Republic in 2019.</div>
+            <div class="to"><span class="lbl">升级</span><em>In recognition of</em> his achievements, he <em>was awarded</em> the Medal of the Republic in 2019.</div>
+            <div class="why">receive → be awarded（被动语态更正式）；加上 In recognition of + 名词，把"为什么得奖"一句话交代清楚，句式也高级了。</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>④ 写作迁移：人物介绍类作文的 8 步骨架 <span class="note">FCE Part 2 Article 约 140–190 词，本文 99 词正好是「人物简介段」的骨架</span></h2>
+        <ol class="tpl">
+          <li><b>X was born in + 地点 + in + 年份.</b> / X came from a poor family in …
+              <span class="zh">交代出生地与年份，一句话带过，别铺开写。</span></li>
+          <li><b>From an early age, he/she showed a remarkable talent for …</b>
+              <span class="zh">自幼显露天赋 —— 比 "When he was young, he liked…" 高级得多。</span></li>
+          <li><b>After graduating from …, he/she dedicated himself/herself to …</b>
+              <span class="zh">毕业后投身某项事业。to 后面跟名词或 doing。</span></li>
+          <li><i>In 1969, he/she was appointed to lead / was chosen to head …</i>
+              <span class="zh">关键转折事件，用被动语态显得客观正式。</span></li>
+          <li><b>Despite + 名词/doing, he/she worked tirelessly …</b>
+              <span class="zh">先写困难，再写努力，制造对比。Despite 后不接完整句子。</span></li>
+          <li><i>Thanks to his/her outstanding contribution, …</i> / <i>His/Her persistence finally paid off when …</i>
+              <span class="zh">结果句。两个万能句式任选，都自带"努力→收获"的逻辑。</span></li>
+          <li><b>In recognition of his/her achievements, he/she was awarded …</b>
+              <span class="zh">荣誉奖项，附上"为表彰……"的原因，信息更完整。</span></li>
+          <li><i>Today he/she remains a source of inspiration to …</i>
+              <span class="zh">结尾升华。比 "He is a good example for us" 强太多。</span></li>
+        </ol>
+      </div>
+
+      <div class="card">
+        <h2>⑤ 词汇精讲表 <span class="note">点任意一行，原文中的词会同步高亮</span></h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr><th>词条</th><th>词性 / 释义</th><th>高频搭配</th><th>例句</th></tr>
+            </thead>
+            <tbody id="vocabBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>⑥ 六个高频易错点</h2>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>易错</th><th>正确</th><th>说明</th></tr></thead>
+            <tbody>
+              <tr><td class="w"><span class="no">✗</span> dedicate oneself to <b>do</b> sth</td><td class="w"><span class="ok">✓</span> dedicate oneself to <b>doing</b> sth</td><td>这里 to 是介词，不是不定式符号。同理 be used to doing / look forward to doing。</td></tr>
+              <tr><td class="w"><span class="no">✗</span> persist <b>to</b> do sth</td><td class="w"><span class="ok">✓</span> persist <b>in</b> doing sth</td><td>persist 固定跟 in。名词 persistence 常用 show great persistence。</td></tr>
+              <tr><td class="w"><span class="no">✗</span> contribution <b>for</b> sth</td><td class="w"><span class="ok">✓</span> contribution <b>to</b> sth</td><td>动词 contribute to 也是 to。make a contribution to 是万能搭配。</td></tr>
+              <tr><td class="w"><span class="no">✗</span> thanks <b>for</b> his help, we finished…</td><td class="w"><span class="ok">✓</span> thanks <b>to</b> his help, we finished…</td><td>thanks to = 多亏（表示原因）；thanks for = 谢谢（表示感谢）。别混。</td></tr>
+              <tr><td class="w"><span class="no">✗</span> He awarded the prize.</td><td class="w"><span class="ok">✓</span> He <b>was awarded</b> the prize.</td><td>漏掉 be 意思就反了 —— 变成"他给别人颁奖"。主动是 award sb sth。</td></tr>
+              <tr><td class="w"><span class="no">✗</span> in recognition <b>for</b> his work</td><td class="w"><span class="ok">✓</span> in recognition <b>of</b> his work</td><td>固定搭配 in recognition of，用于颁奖、致谢、纪念等正式场合。</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= 右栏 ================= -->
+    <aside class="col-right">
+      <div class="card detail sticky" id="detail">
+        <div class="empty">
+          <strong style="color:#8b949e;">← 点击左边的蓝色 / 黄色高亮词</strong><br>
+          这里会显示该词的音标、词性、中文释义、高频搭配、例句、易错提醒，以及"该怎么替换平庸表达"。<br><br>
+          也可以直接点下方词汇表里的任意一行。
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>图例</h2>
+        <ul class="legend" style="list-style:none;margin:0;padding:0;">
+          <li><span class="dot dot-a"></span><span><b style="color:var(--a)">蓝色</b> = FCE 核心词（B2 必备，写作文直接用）</span></li>
+          <li><span class="dot dot-b"></span><span><b style="color:var(--b)">黄色</b> = 高级搭配 / 句型（让文章"像范文"的关键）</span></li>
+          <li><span class="dot dot-c"></span><span>灰色小字 = 音标、词性、易错点</span></li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h2>怎么用这一页 <span class="note">建议 3 遍</span></h2>
+        <p style="font-size:13.5px;line-height:1.9;color:#c2cedb;margin:0;">
+          <b style="color:var(--a)">第 1 遍</b>：点「高亮：关」，把英文通读两遍，先不管生词，只看故事。<br><br>
+          <b style="color:var(--a)">第 2 遍</b>：打开高亮，逐个点词看搭配和例句 —— 重点记<b>搭配</b>（dedicate…<b>to</b> doing），不要只记中文意思。<br><br>
+          <b style="color:var(--a)">第 3 遍</b>：把中文译文遮住，用第 ④ 节的 8 步骨架，自己复述一遍黄旭华的故事，强迫自己用上 remarkable / dedicated / tirelessly / In recognition of。
+        </p>
+      </div>
+    </aside>
+  </div>
+
+  <footer>
+    The Quiet Scientist · 全文 99 词 · 蓝色 FCE 核心词 7 个 / 黄色高级搭配 5 个<br>
+    注：为了集中展示，本文高亮密度偏高（约 25%）。真实写作中一个段落用 2–3 个高级表达就够了，堆太多反而扣分。
+  </footer>
+
+</div>
+
+<script>
+const V = {
+  earlyage:{
+    type:'B', pos:'介词短语', term:'from an early age', ipa:'/frəm ən ˈɜːli eɪdʒ/',
+    zh:'从很小的时候起；自幼',
+    usage:'放在句首作状语，用来介绍人物的早期经历，比 "When he was young" 更简洁正式。常与 showed / began to / was fascinated by 搭配。',
+    colloc:['From an early age, she showed a talent for...','From an early age, he was fascinated by...'],
+    ex:'From an early age, she showed a deep interest in music.',
+    exzh:'她自幼就对音乐表现出浓厚的兴趣。',
+    warn:'age 前不加冠词；不能写成 "from early age"。',
+    swap:'When he was a child → From an early age'
+  },
+  remarkable:{
+    type:'A', pos:'adj.', term:'remarkable', ipa:'/rɪˈmɑːkəbl/',
+    zh:'非凡的；卓越的；令人惊叹的',
+    usage:'比 good / great / nice 高级得多，用来夸能力、成就、进步、变化。副词 remarkably 表示「非常；惊人地」（remarkably successful）。名词是 remark（评论），意思完全不同。',
+    colloc:['a remarkable talent for sth','a remarkable achievement / success / improvement','It is remarkable that + 句子'],
+    ex:'She showed a remarkable talent for music when she was only five.',
+    exzh:'她五岁时就展现出非凡的音乐天赋。',
+    warn:'别和名词 remark（评论；言辞）混用，两者意思毫无关系。',
+    swap:'very good / great → remarkable'
+  },
+  dedicate:{
+    type:'A', pos:'动词短语', term:'dedicate oneself to', ipa:'/ˈdedɪkeɪt/',
+    zh:'献身于；致力于；把（时间、精力）投入到',
+    usage:'dedicate oneself / one\u2019s life / one\u2019s time to sth。to 是介词，后面跟名词或动名词（doing）。被动 be dedicated to 同样常用。名词 dedication 表示「奉献；献身」。',
+    colloc:['dedicate oneself to (doing) sth','dedicate one\u2019s life to sth','be dedicated to doing sth','with great dedication'],
+    ex:'He dedicated his whole life to helping children in poor areas.',
+    exzh:'他把毕生精力都献给了帮助贫困地区的孩子。',
+    warn:'❌ dedicate oneself to do sth → ✅ dedicate oneself to doing sth（to 是介词！）',
+    swap:'spend time on → dedicate oneself to'
+  },
+  appoint:{
+    type:'B', pos:'动词（被动）', term:'be appointed to', ipa:'/əˈpɔɪnt/',
+    zh:'被任命（担任）；被委派',
+    usage:'主动：appoint sb (as) sth / appoint sb to do sth。被动：sb be appointed to do sth / be appointed as + 职位。用于正式介绍人物的职务或任务。',
+    colloc:['be appointed to lead / head / manage...','be appointed as chairman / director','appoint sb to a post'],
+    ex:'In 1969, she was appointed to lead a secret research project.',
+    exzh:'1969 年，她被任命领导一个秘密研究项目。',
+    warn:'职位名称前通常不加 the：be appointed (as) manager。',
+    swap:'was chosen to → was appointed to'
+  },
+  tirelessly:{
+    type:'A', pos:'adv.', term:'tirelessly', ipa:'/ˈtaɪələsli/',
+    zh:'不知疲倦地；孜孜不倦地',
+    usage:'来自 tire（使疲惫）+ -less（无）+ -ly。形容词 tireless 常修饰 efforts / work / dedication：tireless efforts。用来描写一个人长期非常努力，比 work very hard 高一个档次。',
+    colloc:['work tirelessly for years','work tirelessly to do sth','tireless efforts / dedication / work'],
+    ex:'The volunteers worked tirelessly to clean up the beach.',
+    exzh:'志愿者们不知疲倦地清理海滩。',
+    warn:'注意区分：tiring 形容「累人的事情」，tireless 形容「不知疲倦的人」。',
+    swap:'work very hard → work tirelessly'
+  },
+  extraordinary:{
+    type:'A', pos:'adj.', term:'extraordinary', ipa:'/ɪkˈstrɔːdnri/',
+    zh:'非凡的；异乎寻常的；特别的',
+    usage:'extra-（超出）+ ordinary（普通）= 超出普通的。可形容人、勇气、天赋、努力、成就。反义词是 ordinary。与 remarkable 意思接近，写作中交替使用可以避免重复。',
+    colloc:['extraordinary courage / talent / determination','an extraordinary achievement','something extraordinary happens'],
+    ex:'It took extraordinary courage to speak out against the plan.',
+    exzh:'公开反对这个计划需要非凡的勇气。',
+    warn:'拼写：extra + ordinary，不是 extrodinary。',
+    swap:'very special → extraordinary'
+  },
+  persistence:{
+    type:'A', pos:'n.', term:'persistence', ipa:'/pəˈsɪstəns/',
+    zh:'坚持不懈；执着',
+    usage:'动词 persist（坚持），搭配 persist in doing sth；形容词 persistent（坚持不懈的；持续的）；副词 persistently。名词常搭配 show / need great persistence。',
+    colloc:['show great persistence','with persistence','persist in doing sth','a persistent effort'],
+    ex:'Her persistence finally paid off when the company accepted her idea.',
+    exzh:'当公司最终采纳了她的想法时，她的坚持终于得到了回报。',
+    warn:'❌ persist to do sth → ✅ persist in doing sth',
+    swap:'never giving up → persistence'
+  },
+  payoff:{
+    type:'B', pos:'动词短语（不及物）', term:'pay off', ipa:'/ˌpeɪ ˈɒf/',
+    zh:'（努力、风险等）得到回报；奏效',
+    usage:'主语通常是努力、耐心、坚持、冒险等抽象事物，后面不接宾语：All the hard work paid off. 写作中常放在结果句里，用来收束「努力 → 收获」的逻辑。',
+    colloc:['all the hard work paid off','her patience / persistence finally paid off','months of training paid off'],
+    ex:'All those late nights finally paid off \u2014 she passed with an A.',
+    exzh:'那些熬夜的日子终于有了回报——她以 A 的成绩通过了考试。',
+    warn:'别和 pay back（还钱；报复）、pay for（为……付钱）混淆。',
+    swap:'was worth it → paid off'
+  },
+  recognition:{
+    type:'B', pos:'介词短语', term:'in recognition of', ipa:'/ˌrekəɡˈnɪʃn/',
+    zh:'为表彰……；作为对……的认可',
+    usage:'放在句首或句尾作状语，用来说明颁奖、致谢、纪念的原因，是 because of 的「高级正式版」。同根词：recognise（认可）、be widely recognised as（被公认为）。',
+    colloc:['in recognition of one\u2019s achievements / contribution / services','be widely recognised as...','receive recognition for sth'],
+    ex:'In recognition of her services to medicine, she received a national medal.',
+    exzh:'为表彰她对医学的贡献，她获得了一枚国家级奖章。',
+    warn:'固定搭配是 in recognition of，不要写成 in recognition for。',
+    swap:'because of → in recognition of'
+  },
+  contribution:{
+    type:'A', pos:'n.', term:'contribution', ipa:'/ˌkɒntrɪˈbjuːʃn/',
+    zh:'贡献；捐助；投稿',
+    usage:'动词 contribute（贡献；促成），搭配 contribute to sth（有助于 / 导致）。名词常用：make a contribution to sth / an outstanding contribution to sth。介词是 to，不是 for。',
+    colloc:['make a valuable contribution to sth','an outstanding / major contribution to','contribute to sth'],
+    ex:'She made a valuable contribution to the project.',
+    exzh:'她为这个项目做出了宝贵的贡献。',
+    warn:'❌ contribution for → ✅ contribution to',
+    swap:'help → make a contribution to'
+  },
+  award:{
+    type:'A', pos:'动词（被动）', term:'be awarded', ipa:'/əˈwɔːd/',
+    zh:'被授予；被颁发',
+    usage:'主动：award sb sth（授予某人某物）。被动有两种：sb be awarded sth / sth be awarded to sb。名词 award 也表示「奖项」，win an award for sth。',
+    colloc:['be awarded the Nobel Prize / a medal','award sb sth','win an award for sth'],
+    ex:'He was awarded the prize for his research.',
+    exzh:'他因研究成果而被授予该奖项。',
+    warn:'❌ He awarded the prize（漏掉 be，意思就变成「他给别人颁奖」了）。',
+    swap:'receive / get → be awarded'
+  },
+  inspiration:{
+    type:'B', pos:'名词短语', term:'a source of inspiration', ipa:'/ˌɪnspəˈreɪʃn/',
+    zh:'灵感的源泉；鼓舞的来源',
+    usage:'固定搭配 a source of inspiration to / for sb。动词 inspire（激励；启发），inspire sb to do sth。非常适合做人物类作文的结尾句，替代 "he is a good example for us"。',
+    colloc:['a source of inspiration to young people','inspire sb to do sth','be inspired by sb / sth'],
+    ex:'Her story has become a source of inspiration for millions of young people.',
+    exzh:'她的故事已经成为数百万年轻人的灵感源泉。',
+    warn:'介词可用 to 或 for；不要写成 a source of inspire。',
+    swap:'a good example for us → a source of inspiration to us'
+  }
+};
+
+/* ---------- 词汇精讲表 ---------- */
+const ORDER = ['remarkable','dedicate','tirelessly','extraordinary','persistence','contribution','award','earlyage','appoint','payoff','recognition','inspiration'];
+const SHORT = {
+  remarkable:'卓越的；非凡的', dedicate:'献身于；致力于', tirelessly:'不知疲倦地',
+  extraordinary:'非凡的；异乎寻常的', persistence:'坚持不懈', contribution:'贡献',
+  award:'被授予', earlyage:'自幼；从小', appoint:'被任命', payoff:'得到回报；奏效',
+  recognition:'为表彰……', inspiration:'灵感源泉'
+};
+const CL = {
+  remarkable:'a remarkable talent for / achievement',
+  dedicate:'dedicate oneself to (doing) sth',
+  tirelessly:'work tirelessly to do sth',
+  extraordinary:'extraordinary courage / talent',
+  persistence:'show great persistence',
+  contribution:'make a contribution to sth',
+  award:'be awarded the Nobel Prize',
+  earlyage:'From an early age, she showed...',
+  appoint:'be appointed to lead / head...',
+  payoff:'all the hard work paid off',
+  recognition:'in recognition of one\u2019s achievements',
+  inspiration:'a source of inspiration to sb'
+};
+(function buildTable(){
+  const tb = document.getElementById('vocabBody');
+  tb.innerHTML = ORDER.map(k=>{
+    const d=V[k];
+    const badge = d.type==='A' ? '<span class="badge a">核心词</span>' : '<span class="badge b">高级</span>';
+    return '<tr data-v="'+k+'">'+
+      '<td class="w">'+d.term+badge+'<small>'+d.ipa+'</small></td>'+
+      '<td>'+d.pos+'<br>'+SHORT[k]+'</td>'+
+      '<td><code>'+CL[k]+'</code></td>'+
+      '<td>'+d.ex.replace(/<b>/g,'').replace(/<\/b>/g,'')+'</td>'+
+    '</tr>';
+  }).join('');
+})();
+
+/* ---------- 详情卡 ---------- */
+const detail = document.getElementById('detail');
+function esc(s){return s;}
+function show(id){
+  const d = V[id];
+  if(!d) return;
+  const isA = d.type==='A';
+  const cls = isA ? '' : ' t-amber';
+  detail.innerHTML =
+    '<div class="dtag '+(isA?'t-A':'t-B')+'">'+(isA?'FCE 核心词':'高级搭配 / 句型')+'</div>'+
+    '<h3>'+esc(d.term)+' <span class="pos">'+d.pos+'</span></h3>'+
+    '<div class="ipa">'+d.ipa+'</div>'+
+    '<div class="zh-def">'+d.zh+'</div>'+
+    '<div class="blk'+cls+'"><h4>用法</h4><p>'+d.usage+'</p></div>'+
+    '<div class="blk'+cls+'"><h4>常用搭配</h4><ul>'+d.colloc.map(c=>'<li>'+c+'</li>').join('')+'</ul></div>'+
+    '<div class="blk'+cls+'"><h4>例句</h4><p class="ex'+(isA?'':' amber')+'">'+d.ex+'</p><p class="exzh">'+d.exzh+'</p></div>'+
+    '<div class="blk warn"><h4>易错提醒</h4><p>'+d.warn+'</p></div>'+
+    '<div class="blk"><h4>升级替换</h4><p class="swap">'+d.swap+'</p></div>';
+  document.querySelectorAll('.hl').forEach(el=>{
+    el.classList.toggle('active', el.dataset.v===id);
+  });
+  document.querySelectorAll('#vocabBody tr').forEach(tr=>{
+    tr.classList.toggle('active', tr.dataset.v===id);
+  });
+}
+document.addEventListener('click', e=>{
+  const hl = e.target.closest('.hl');
+  if(hl){ show(hl.dataset.v); return; }
+  const tr = e.target.closest('#vocabBody tr');
+  if(tr){ show(tr.dataset.v); }
+});
+
+/* ---------- 开关 ---------- */
+const btnHl = document.getElementById('btnHl');
+const btnCn = document.getElementById('btnCn');
+const btnAll = document.getElementById('btnAll');
+btnHl.addEventListener('click',()=>{
+  const off = document.body.classList.toggle('no-hl');
+  btnHl.classList.toggle('on', !off);
+  btnHl.textContent = off ? '高亮：关' : '高亮：开';
+});
+btnCn.addEventListener('click',()=>{
+  const hide = cardCn.style.display !== 'none';
+  cardCn.style.display = hide ? 'none' : '';
+  btnCn.classList.toggle('on', !hide);
+  btnCn.textContent = hide ? '中文译文：隐藏' : '中文译文：显示';
+});
+let allOpen=false;
+btnAll.addEventListener('click',()=>{
+  allOpen=!allOpen;
+  btnAll.classList.toggle('on',allOpen);
+  btnAll.textContent = allOpen ? '收起讲解' : '展开全部讲解';
+  if(allOpen){
+    const parts = ORDER.map(k=>{
+      const d=V[k];
+      return '<div style="padding:14px 0;border-bottom:1px dashed #252d3a;">'+
+        '<div class="dtag '+(d.type==='A'?'t-A':'t-B')+'">'+(d.type==='A'?'核心词':'高级')+'</div>'+
+        '<h3 style="font-size:18px;">'+d.term+' <span class="pos">'+d.pos+'</span></h3>'+
+        '<div class="ipa">'+d.ipa+'</div>'+
+        '<div class="zh-def" style="margin-bottom:10px;padding-bottom:10px;">'+d.zh+'</div>'+
+        '<div class="blk"><h4>搭配</h4><ul>'+d.colloc.map(c=>'<li>'+c+'</li>').join('')+'</ul></div>'+
+        '<div class="blk"><h4>例句</h4><p class="ex">'+d.ex+'</p><p class="exzh">'+d.exzh+'</p></div>'+
+        '<div class="blk warn"><h4>易错</h4><p>'+d.warn+'</p></div>'+
+      '</div>';
+    }).join('');
+    detail.innerHTML = '<h2 style="font-size:15px;margin:0 0 6px;">全部 12 个词条</h2>'+parts;
+    detail.style.position='static';
+  }else{
+    detail.style.position='';
+    detail.innerHTML = '<div class="empty"><strong style="color:#8b949e;">← 点击左边的蓝色 / 黄色高亮词</strong><br>这里会显示该词的音标、词性、中文释义、高频搭配、例句、易错提醒，以及"该怎么替换平庸表达"。</div>';
+  }
+});
+
+/* 默认展示第一个词 */
+show('remarkable');
+</script>
+</body>
+</html>
