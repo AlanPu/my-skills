@@ -32,9 +32,3 @@ Download YouTube videos with customizable quality and format options. Use this s
 ### youtube-summary
 根据 YouTube 视频链接抓取字幕，并生成中文总结。当用户给出 YouTube 链接（youtube.com / youtu.be）并要求「总结 / 摘要 / 提炼要点 / 讲了什么 / 翻译成中文」，或要求对视频做读书笔记、内容提炼、观点整理时使用。支持短视频、长视频、中文与外文视频，支持一次处理多个链接。产出含一句话总结、5–8 条带 `[mm:ss]` 时间戳的核心要点、分节详细内容、关键金句与术语表。**与 `youtube-downloader` 的区别：那个负责把视频下载到本地，这个负责「读懂并总结内容」。**
 
-## 使用方法
-1. 在 Trae IDE 中，当遇到对应场景时，系统会自动调用相应的技能
-2. 也可以手动指定使用某个技能来完成特定任务
-
-## 贡献
-欢迎添加新的技能到这个仓库中。
