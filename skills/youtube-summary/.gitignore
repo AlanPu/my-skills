@@ -1,0 +1,7 @@
+.DS_Store
+*.pyc
+__pycache__/
+.workbuddy/
+*.json
+!examples/*.json
+.venv/
