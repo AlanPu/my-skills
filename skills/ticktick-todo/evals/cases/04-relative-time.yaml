@@ -1,0 +1,32 @@
+# ─────────────────────────────────────────────────────────────
+# 相对时间（明天 / 今天）：依赖"现在几点"。
+#
+# 用例文件里用 fixture 把时钟钉住：
+#     fixed_today:    2026-10-18
+#     fixed_tomorrow: 2026-10-19
+# runner 会在 PATH 里插一个 date shim 来返回这两个值。
+#
+# 为什么要钉时钟？
+#   不钉的话，"明天"到底是哪天取决于你哪天跑评测——周一跑是绿的，
+#   周二可能就红了，而且和代码没关系。评测必须可复现。
+# ─────────────────────────────────────────────────────────────
+case: relative_tomorrow_10_minutes
+note: 「明天 20:00」→ 明天 19:50
+
+fixed_today: "2026-10-18"
+fixed_tomorrow: "2026-10-19"
+
+args: ["英语课", "明天 20:00", "", "🧚提子"]
+
+checks:
+  - kind: url
+    param: startDate
+    value: "2026-10-19T19:50:00.000"
+  - kind: url
+    param: allDay
+    value: "false"
+  - kind: url_encoded
+    param: content
+    value: "英语课 明天 20:00"
+  - kind: exit
+    param: "0"

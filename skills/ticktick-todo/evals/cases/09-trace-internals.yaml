@@ -1,0 +1,37 @@
+# ─────────────────────────────────────────────────────────────
+# trace：直接看脚本内部变量（只对纯函数 / 单点算法用）。
+#
+# 为什么不总是用 trace？
+#   它和实现绑死了——脚本一重构（改文件名、改变量名）就全红。
+#   对外行为（URL）才是契约，trace 只是"想要细粒度时的手术刀"。
+#
+# 什么时候值得用 trace：
+#   - 一个内部的纯函数（subtract_10_minutes），为它造一串集成用例太浪费
+#   - 想确认某个中间状态确实没被赋值（比如"全天任务不应设置 TASK_DUE_TIME"）
+# ─────────────────────────────────────────────────────────────
+case: trace_internal_variables
+note: 用 bash -x 轨迹检查内部逻辑分支
+
+trace: true
+
+fixed_today: "2026-10-18"
+fixed_tomorrow: "2026-10-19"
+
+args: ["英语课", "明天 20:00", "", "🧚提子"]
+
+checks:
+  # 内部变量：日期解析正确、时刻正确
+  - kind: trace
+    param: TASK_DUE_DATE
+    value: "2026-10-19"
+  - kind: trace
+    param: TASK_DUE_TIME
+    value: "19:50"
+  # 原始时间被单独保留下来（这正是 content 用它的原因）
+  - kind: trace
+    param: ORIGINAL_TIME
+    value: "明天 20:00"
+  # URL 断言照常可叠加：内部对，外部也得对
+  - kind: url
+    param: startDate
+    value: "2026-10-19T19:50:00.000"

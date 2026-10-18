@@ -1,0 +1,31 @@
+# ─────────────────────────────────────────────────────────────
+# 相对时间 + 前导零：SKILL.md 第一个示例就是这个组合。
+#
+# 这条用例演示"用真实世界输入跑出的 bug"：
+#   bash create_task_official_url.sh "英语课" "明天 09:00" "" "🧚提子"
+# 会打印 "09: value too great for base"，然后**静默退化成全天任务**，
+# 并且 content 里还留着 "明天 09:00" 这种不会被 TickTick 识别的相对时间。
+#
+# 断言拆成两层，让你看到"到底哪坏了"：
+#   ① 正确行为（allDay 应为 false，startDate 为 08:50）→ 已知失败
+#   ② 退化行为（allDay=true）→ 现在能过，但它是 bug 的表现。
+#      等 ① 修好后，② 会自己变红，提醒你把这条断言删掉。
+#     ——这种"BUG 守卫"断言要配 allow_fail 或单独命名，否则修好之后会反咬你。
+# ─────────────────────────────────────────────────────────────
+case: relative_tomorrow_09_00
+note: SKILL.md 示例输入；09 触发八进制错误后静默退化为全天任务
+
+allow_fail: true
+
+fixed_today: "2026-10-18"
+fixed_tomorrow: "2026-10-19"
+
+args: ["英语课", "明天 09:00", "", "🧚提子"]
+
+checks:
+  - kind: url
+    param: startDate
+    value: "2026-10-19T08:50:00.000"
+  - kind: url
+    param: allDay
+    value: "false"

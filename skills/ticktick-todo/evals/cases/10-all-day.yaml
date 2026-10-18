@@ -1,0 +1,24 @@
+# ─────────────────────────────────────────────────────────────
+# 未指定时辰 = 全天任务。
+#
+# 这是脚本里一条容易漏掉的路径：TASK_DUE_TIME 为空 → allDay=true。
+# 任何有 if 分支的地方，都值得至少一条用例——两条分支各一条。
+# ─────────────────────────────────────────────────────────────
+case: date_only_is_all_day
+note: 只给日期不给时间 → 全天任务
+
+args: ["交作业", "2026-03-06", "", "🧚提子"]
+
+checks:
+  - kind: url
+    param: allDay
+    value: "true"
+  - kind: url
+    param: startDate
+    value: "2026-03-06T00:00:00.000"
+  - kind: url
+    param: title
+    value: "交作业"
+  - kind: direct
+    param: count
+    value: "1"

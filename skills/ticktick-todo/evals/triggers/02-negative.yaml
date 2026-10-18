@@ -1,0 +1,64 @@
+# ─────────────────────────────────────────────────────────────
+# 触发器评测（第二类）：**不该被调用**的请求。
+#
+# 负例比正例更值钱。正例漏召回只是「没帮上忙」；
+# 负例误召回会让 skill 抢走别的活的活，或者对着一个只是提到
+# "清单"两个字的句子就开始建任务。
+#
+# 每条负例都要有个"为什么看起来像但其实不是"的理由（note），
+# 否则容易被后来的人当成写错的用例删掉。
+# ─────────────────────────────────────────────────────────────
+eval: trigger
+skill: ticktick-todo
+kind: negative
+
+cases:
+  - id: todo-app-vs-todo-list
+    prompt: 帮我列一下这周要做的事，先不用建待办
+    expect_trigger: false
+    note: "提到「待办」但明确说不用建——这是纯文本整理任务"
+
+  - id: shopping-list
+    prompt: 帮我写个购物清单
+    expect_trigger: false
+    note: "「清单」是日常用词，和滴答清单的清单无关"
+
+  - id: amazon-wishlist
+    prompt: 查一下我的亚马逊心愿单里那个耳机降价了没
+    expect_trigger: false
+    note: "英文 list / 清单 出现在完全无关的购物语境里"
+
+  - id: meeting-notes
+    prompt: 把这次会议纪要整理成 Markdown
+    expect_trigger: false
+    note: "要产出文档而不是待办——应走 normalizing-note 一类"
+
+  - id: write-a-calendar-feature
+    prompt: 用 Python 写个能读取 ICS 日历文件的脚本
+    expect_trigger: false
+    note: "在写代码处理日历数据，不是在用日历截图建任务"
+
+  - id: compare-todo-apps
+    prompt: 推荐几个好用的待办 App，滴答清单和 Things 哪个好
+    expect_trigger: false
+    note: "在比较工具，不是在执行建任务的动作"
+
+  - id: video-download
+    prompt: 把这个 YouTube 视频下载下来
+    expect_trigger: false
+    note: "应触发 youtube-downloader，而不是本 skill"
+
+  - id: explain-cron
+    prompt: 解释一下 crontab 里的 0 9 * * 1 是什么意思
+    expect_trigger: false
+    note: "在问定时语法——「9 点」「每周一」这类词最容易误召回"
+
+  - id: english-class-vocab
+    prompt: 我明天要上英语课，帮我准备一些复习单词
+    expect_trigger: false
+    note: 最危险——「明天」「英语课」是 SKILL.md 高频词，但用户要的是备课材料
+
+  - id: read-my-todos
+    prompt: 我滴答清单里现在有哪些任务？
+    expect_trigger: false
+    note: 边界用例——用户确实提到滴答清单，但要的是查询而非创建。skill 支持查询后改成 true。

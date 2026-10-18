@@ -1,0 +1,34 @@
+# ─────────────────────────────────────────────────────────────
+# 转义字符：title 里出现单引号 / 尖括号时，URL 编码对不对。
+#
+# 这类用例专抓"把值拼进 python -c '...' 字符串"的 bug：
+# 脚本里是 python3 -c "...quote('$TASK_TITLE')..."，
+# title 含单引号时 python 代码直接被拼断（SyntaxError），
+# ENCODED_TITLE 变空 → title 参数丢失，但脚本退出码仍是 0。
+# happy path 永远看不见，只有边界输入能抓到。
+#
+# 注意断言顺序：先断言 startDate（此时脚本确实会 open），
+# 再断言 title。这样失败信息能精确指向"title 丢了"而不是"整个 URL 没了"。
+# ─────────────────────────────────────────────────────────────
+case: title_with_apostrophe
+note: 标题含单引号，python -c 拼接被破坏，title 丢失
+
+allow_fail: true
+
+args: ["Mom's 生日 <重要>", "2026-03-02 20:00", "", "🧚提子"]
+
+checks:
+  # 先钉住"URL 确实构造出来了"——否则下面的 title 断言会误导
+  - kind: url
+    param: startDate
+    value: "2026-03-02T19:50:00.000"
+  # 再断言 title 原样保留
+  - kind: url
+    param: title
+    value: "Mom's 生日 <重要>"
+  # 编码形状：单引号应为 %27，空格为 %20
+  - kind: url_encoded
+    param: title
+    value: "Mom's 生日 <重要>"
+  - kind: exit
+    param: "0"

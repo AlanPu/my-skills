@@ -1,0 +1,61 @@
+# ─────────────────────────────────────────────────────────────
+# 触发器评测（第一类）：**该被调用**的请求。
+#
+# 它测的不是脚本，而是 SKILL.md frontmatter 里的 description。
+# 写用例时用「用户真的会这么说」的句子，而不是复述 skill 术语。
+#
+# 要回答的两个问题：
+#   1. expect_trigger —— 该不该加载这个 skill
+#   2. runs           —— 加载后该不该跑那个脚本（只关心第一个动作）
+# ─────────────────────────────────────────────────────────────
+eval: trigger
+skill: ticktick-todo
+kind: positive
+
+cases:
+  - id: pastes-calendar-screenshot
+    prompt: 这是我下个月的课表截图，帮我把有课的日期都加进滴答清单
+    expect_trigger: true
+    runs: create_task_official_url.sh
+    note: 最核心场景——识别日历截图并批量建任务
+
+  - id: explicit-ticktick
+    prompt: 在滴答清单里加一个明天晚上八点学英语的待办
+    expect_trigger: true
+    runs: create_task_official_url.sh
+
+  - id: mixed-language
+    prompt: 帮我在 TickTick 里建个待办
+    expect_trigger: true
+    runs: create_task_official_url.sh
+    note: 中英混用也要认出来
+
+  - id: recurring-classes
+    prompt: 每周一三五晚上七点半有钢琴课，都给我安排上提醒
+    expect_trigger: true
+
+  - id: teacher-schedule
+    prompt: 把 Michele 老师这次的排课日期建成待办
+    expect_trigger: true
+    note: 对应 SKILL.md 里反复强调的日历识别场景
+
+  - id: just-add-a-reminder
+    prompt: 这些日期帮我记一下，别让我忘了上课
+    expect_trigger: true
+    note: 没提「滴答清单」三个字——靠 description 的语义召回
+
+  - id: open-the-app
+    prompt: 打开滴答清单
+    expect_trigger: true
+
+  - id: single-task
+    prompt: 新建一个待办：周五交作业
+    expect_trigger: true
+
+  - id: screenshot-based
+    prompt: 看这张图，有老师名字的格子都要加成待办
+    expect_trigger: true
+
+  - id: assignee-and-list
+    prompt: 这些任务加到 🧚提子 清单里，执行人写提子
+    expect_trigger: true
